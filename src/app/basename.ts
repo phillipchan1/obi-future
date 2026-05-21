@@ -1,4 +1,4 @@
-export const REPO_NAME = "obi-experimental";
+export const REPO_NAME = "obi-future";
 
 /** GitHub Actions Pages serves at site root; org project URL uses /repo-name/. */
 export function getRouterBasename(): string {
