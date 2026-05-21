@@ -24,6 +24,13 @@ export const router = createBrowserRouter(
         },
         {
           path: "/dashboard",
+          loader: ({ request }) => {
+            const url = new URL(request.url);
+            if (!url.searchParams.has("view")) {
+              return redirect("/dashboard?view=leader&tab=intelligence");
+            }
+            return null;
+          },
           Component: Dashboard,
         },
       ],

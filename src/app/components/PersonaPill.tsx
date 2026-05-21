@@ -1,19 +1,19 @@
-import { useLocation, useNavigate, useSearchParams } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
-export type PersonaView = 'gameplan' | 'leader' | 'employee';
+export type PersonaView = 'gameplan' | 'companyIntel' | 'employee';
 
 export function getActivePersonaView(pathname: string, search: string): PersonaView {
   if (pathname === '/full' || pathname === '/') return 'gameplan';
   if (pathname === '/dashboard') {
     const params = new URLSearchParams(search);
-    return params.get('view') === 'employee' ? 'employee' : 'leader';
+    return params.get('view') === 'employee' ? 'employee' : 'companyIntel';
   }
   return 'gameplan';
 }
 
 const PILLS: { id: PersonaView; label: string }[] = [
   { id: 'gameplan', label: 'Game Plan' },
-  { id: 'leader', label: 'Leader' },
+  { id: 'companyIntel', label: 'Intel' },
   { id: 'employee', label: 'My View' },
 ];
 
@@ -25,7 +25,8 @@ export function PersonaPill() {
 
   const go = (view: PersonaView) => {
     if (view === 'gameplan') navigate('/full');
-    else navigate(`/dashboard?view=${view}`);
+    else if (view === 'employee') navigate('/dashboard?view=employee');
+    else navigate('/dashboard?view=leader&tab=intelligence');
   };
 
   return (
@@ -66,6 +67,6 @@ export function PersonaPill() {
 }
 
 export function useDashboardPersona(): 'leader' | 'employee' {
-  const [searchParams] = useSearchParams();
-  return searchParams.get('view') === 'employee' ? 'employee' : 'leader';
+  const { search } = useLocation();
+  return new URLSearchParams(search).get('view') === 'employee' ? 'employee' : 'leader';
 }

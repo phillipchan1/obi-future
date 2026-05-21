@@ -10,18 +10,27 @@ export type EmployeeRecord = {
   finalScore: number;
   level: ReadinessLevel;
   retook: boolean;
+  copilotUsage: number;
+  doNowComplete: number;
+  doNowTotal: number;
+  roleDisruptionPct: number;
+  gapScore: number;
 };
+
+export function formatEmployeeId(id: number): string {
+  return `Employee ${String(id).padStart(3, '0')}`;
+}
 
 export const DASHBOARD_COLORS = {
   bg: '#0D1117',
   card: '#161B22',
-  border: 'rgba(255,255,255,0.08)',
+  border: '#2A3A4A',
   accent: '#2E75B6',
   green: '#3FB950',
   yellow: '#D29922',
   red: '#F85149',
   text: '#E6EDF3',
-  muted: 'rgba(230,237,243,0.4)',
+  muted: '#8B949E',
 };
 
 export const LEADER_STATS = {
@@ -33,6 +42,11 @@ export const LEADER_STATS = {
   reengagersCount: 19,
   avgScore: 71.4,
   medianScore: 78,
+  medianCopilotUsage: 31,
+  topQuartileBenchmark: 79,
+  nonReengagedCount: 35,
+  skilledPeerCoachCount: 3,
+  scoreGainInRollout: 8,
 };
 
 export const READINESS_DIST = [
@@ -42,34 +56,6 @@ export const READINESS_DIST = [
   { level: 'Skilled' as const, count: 29, pct: 54, color: DASHBOARD_COLORS.green },
 ];
 
-function scoreBucketColor(range: string): string {
-  const low = parseInt(range.split('–')[0], 10);
-  if (low <= 50) return DASHBOARD_COLORS.red;
-  if (low <= 70) return DASHBOARD_COLORS.yellow;
-  return DASHBOARD_COLORS.green;
-}
-
-export const SCORE_BUCKETS = [
-  { range: '0–10', count: 0 },
-  { range: '11–20', count: 1 },
-  { range: '21–30', count: 2 },
-  { range: '31–40', count: 3 },
-  { range: '41–50', count: 4 },
-  { range: '51–60', count: 5 },
-  { range: '61–70', count: 7 },
-  { range: '71–80', count: 11 },
-  { range: '81–90', count: 12 },
-  { range: '91–100', count: 8 },
-].map(b => ({ ...b, color: scoreBucketColor(b.range) }));
-
-export const TREND_DATA = [
-  { day: 'Day 1', avgScore: 62, cumCompletions: 8, cumRetakers: 1 },
-  { day: 'Day 2', avgScore: 66, cumCompletions: 19, cumRetakers: 4 },
-  { day: 'Day 3', avgScore: 69, cumCompletions: 31, cumRetakers: 9 },
-  { day: 'Day 4', avgScore: 70, cumCompletions: 42, cumRetakers: 14 },
-  { day: 'Day 5', avgScore: 71.4, cumCompletions: 53, cumRetakers: 19 },
-];
-
 export const INTELLIGENCE = {
   topDisruptedRoles: [
     { title: 'Senior Product Manager', disruptionScore: 8.4, avgReadiness: 72 },
@@ -77,9 +63,9 @@ export const INTELLIGENCE = {
     { title: 'Business Analyst', disruptionScore: 7.2, avgReadiness: 61 },
   ],
   flagged: [
-    { name: 'Jordan Lee', title: 'Product Manager II', disruptionScore: 8.1, finalScore: 54, level: 'Learner' as const },
-    { name: 'Sam Ortiz', title: 'Senior Business Analyst', disruptionScore: 7.8, finalScore: 48, level: 'Beginner' as const },
-    { name: 'Riley Chen', title: 'Associate PM', disruptionScore: 7.5, finalScore: 59, level: 'Learner' as const },
+    { employeeId: 3, title: 'Product Manager II', department: 'Product & Design', disruptionScore: 81, finalScore: 54, level: 'Learner' as const },
+    { employeeId: 5, title: 'Senior Business Analyst', department: 'Operations', disruptionScore: 78, finalScore: 48, level: 'Beginner' as const },
+    { employeeId: 4, title: 'Associate PM', department: 'Product & Design', disruptionScore: 75, finalScore: 59, level: 'Learner' as const },
   ],
   courseCompletionByTier: { doNow: 34, doLater: 12, skip: 4 },
   copilotPercentiles: [
@@ -90,10 +76,8 @@ export const INTELLIGENCE = {
   ],
 };
 
-// My View — Phil Chan persona data
 export const MY_VIEW = {
   persona: {
-    name: 'Phil Chan',
     role: 'Senior Product Manager',
     department: 'Product & Design',
     aiLevel: 'Learner' as const,
@@ -102,6 +86,7 @@ export const MY_VIEW = {
     finalScore: 78,
     firstScore: 71,
     day: 5,
+    doNowRemaining: 4,
   },
   copilot: {
     period: 'Last 90 days',
@@ -112,22 +97,6 @@ export const MY_VIEW = {
     benchmarkMinutesPerChat: 4,
     weeklyTrend: [3, 5, 4, 8, 6, 9, 7, 5, 6, 4, 5, 7, 8],
     peerLabel: 'Product & Design org',
-  },
-  weeklyPlan: [
-    { id: 'w1', week: 'Week 1', action: 'Install Copilot and connect it to Teams, Outlook, and Word' },
-    { id: 'w2', week: 'Week 2', action: 'Complete your 4 core foundational courses (all under 35 min each)' },
-    { id: 'w3', week: 'Week 3', action: 'Use Copilot to summarize a real meeting or draft a stakeholder email' },
-    { id: 'w4', week: 'Week 4', action: 'Write your first AI-assisted PRD or strategy one-pager' },
-    { id: 'w5', week: 'Week 5', action: 'Run an AI research synthesis session on real interview or survey data' },
-    { id: 'w6', week: 'Week 6', action: "Use AI to stress-test your current roadmap — look for gaps you've missed" },
-    { id: 'w7', week: 'Week 7', action: 'Teach one AI workflow to your team or a peer' },
-    { id: 'w8', week: 'Week 8', action: 'Review your Copilot usage; set your next skill goal with your champion' },
-  ],
-  nextCourse: {
-    title: 'Getting Started with Microsoft Copilot',
-    source: 'LinkedIn Learning',
-    duration: '32 min',
-    reason: 'Your on-ramp. Covers Copilot in Teams, Outlook, and Word — do this first.',
   },
 };
 
@@ -155,11 +124,12 @@ const TITLES = [
   'Research Lead', 'Design Lead',
 ];
 
-function levelForScore(score: number): ReadinessLevel {
-  if (score < 55) return 'Beginner';
-  if (score < 68) return 'Learner';
-  if (score < 82) return 'Familiar';
-  return 'Skilled';
+function disruptionPctForTitle(title: string, i: number): number {
+  if (title.includes('Research') || title.includes('Analyst') || title.includes('Product Manager')) {
+    return 85 + (i % 10);
+  }
+  if (title.includes('Designer') || title.includes('Engineer')) return 65 + (i % 15);
+  return 45 + (i % 25);
 }
 
 function buildEmployees(): EmployeeRecord[] {
@@ -183,16 +153,27 @@ function buildEmployees(): EmployeeRecord[] {
     const finalScore = min + ((i * 7) % (max - min + 1));
     const firstScore = Math.max(40, finalScore - (i % 5 === 0 ? 8 : 3));
     const retook = i % 3 === 0 || (firstScore < 65 && finalScore >= 65);
+    const title = TITLES[i % TITLES.length];
+    const roleDisruptionPct = disruptionPctForTitle(title, i);
+    const gapScore = Math.round(roleDisruptionPct - finalScore);
+    const copilotUsage = 12 + ((i * 13) % 75);
+    const doNowComplete = level === 'Skilled' ? 5 : level === 'Familiar' ? 3 + (i % 3) : level === 'Learner' ? 1 + (i % 3) : i % 2;
+
     return {
       id: i + 1,
       name,
       department: DEPTS[i % DEPTS.length],
-      title: TITLES[i % TITLES.length],
+      title,
       day: (i % 5) + 1,
       firstScore,
       finalScore,
       level,
       retook,
+      copilotUsage,
+      doNowComplete,
+      doNowTotal: 5,
+      roleDisruptionPct,
+      gapScore,
     };
   });
 }
