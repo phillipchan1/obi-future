@@ -1,4 +1,5 @@
 import { createBrowserRouter, redirect } from "react-router";
+import { getRouterBasename } from "./basename";
 import { AppLayout } from "./AppLayout";
 import { FullPage } from "./components/FullPage";
 import { MinimalPage } from "./components/MinimalPage";
@@ -28,5 +29,5 @@ export const router = createBrowserRouter(
       ],
     },
   ],
-  { basename: import.meta.env.BASE_URL }
+  { basename: getRouterBasename() }
 );

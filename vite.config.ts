@@ -17,7 +17,8 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig({
-  base: '/obi-experimental/',
+  // Relative paths work for both *.pages.github.io (root) and org.github.io/repo/
+  base: './',
   server: {
     port: 5173,
     strictPort: true,
