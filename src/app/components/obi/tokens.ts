@@ -1,6 +1,7 @@
 /** Company Intelligence design system */
 export const INTEL = {
   bg: '#1A0A3E',
+  tabBar: '#150830',
   surface: '#2D1B69',
   surfaceDark: '#1F0F3D',
   surfaceGreen: '#0F2A1A',

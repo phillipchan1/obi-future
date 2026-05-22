@@ -5,6 +5,7 @@ import { Bot } from 'lucide-react';
 import { LEADER_CONTEXT } from '../../../data/obi-intelligence';
 import type { ObiTab, ObiView } from './tokens';
 import { INTEL } from './tokens';
+import { IntelWatermark } from './shared/IntelWatermark';
 import { ObiTabNav } from './shared/ObiTabNav';
 import { IntelligenceView } from './IntelligenceView';
 import { ChatView } from './ChatView';
@@ -55,8 +56,12 @@ export function ObiShell() {
 
   return (
     <div
-      className="fixed inset-0 overflow-hidden font-sans"
-      style={{ backgroundColor: INTEL.bg, color: INTEL.text }}
+      className="fixed inset-0 overflow-hidden"
+      style={{
+        backgroundColor: INTEL.bg,
+        color: INTEL.text,
+        fontFamily: 'Inter, system-ui, sans-serif',
+      }}
     >
       <style>{`
         @keyframes intelPulse {
@@ -71,33 +76,16 @@ export function ObiShell() {
         .intel-btn-glow { animation: intelGlow 2.5s ease-in-out infinite; }
       `}</style>
 
-      {/* INTEL watermark */}
-      <div
-        className="absolute pointer-events-none select-none text-white"
-        style={{
-          opacity: 0.08,
-          fontSize: '300px',
-          fontWeight: 900,
-          lineHeight: 1,
-          letterSpacing: '-0.04em',
-          bottom: '-4rem',
-          right: '-2rem',
-        }}
-      >
-        INTEL
-      </div>
+      <IntelWatermark />
 
       <div className="relative z-10 h-full flex flex-col overflow-hidden">
-        {/* Full-width tab bar */}
-        <div className="flex-none px-4 sm:px-6 lg:px-10 pt-4">
-          <ObiTabNav view={view} tab={tab} onNavigate={navigateTo} />
-        </div>
+        {/* Full-bleed tab bar — top edge */}
+        <ObiTabNav view={view} tab={tab} onNavigate={navigateTo} />
 
-        {/* Leader header — intelligence briefing chrome */}
         {view === 'leader' && (
           <header
-            className="flex-none px-4 sm:px-6 lg:px-10 py-5 border-b"
-            style={{ borderColor: INTEL.border }}
+            className="flex-none px-6 lg:px-10 py-5 border-b"
+            style={{ borderColor: INTEL.border, backgroundColor: INTEL.bg }}
           >
             <div className="max-w-6xl mx-auto flex items-start gap-3">
               <div
@@ -107,7 +95,9 @@ export function ObiShell() {
                 <Bot size={20} className="text-white" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-2xl font-bold text-white">Obi — Company Intelligence</h1>
+                <h1 className="text-2xl font-bold" style={{ color: INTEL.text }}>
+                  Obi — Company Intelligence
+                </h1>
                 <p className="text-sm mt-1" style={{ color: INTEL.muted }}>
                   {LEADER_CONTEXT.leaderName} · {LEADER_CONTEXT.title} ·{' '}
                   {LEADER_CONTEXT.companyEmployeeCount.toLocaleString()} company-wide ·{' '}
@@ -127,15 +117,18 @@ export function ObiShell() {
           </header>
         )}
 
-        <main className="flex-1 overflow-y-auto px-4 sm:px-6 lg:px-10 py-6 min-h-0">
+        <main
+          className="flex-1 overflow-y-auto px-6 lg:px-10 py-8 min-h-0"
+          style={{ backgroundColor: INTEL.bg }}
+        >
           <div className="max-w-6xl mx-auto">
             <AnimatePresence mode="wait">
               {view === 'employee' ? (
                 <motion.div
                   key="employee"
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
                   <MyView />
@@ -143,9 +136,9 @@ export function ObiShell() {
               ) : tab === 'intelligence' ? (
                 <motion.div
                   key="intelligence"
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
                   <IntelligenceView
@@ -156,9 +149,9 @@ export function ObiShell() {
               ) : tab === 'chat' ? (
                 <motion.div
                   key="chat"
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
                   <ChatView
@@ -170,9 +163,9 @@ export function ObiShell() {
               ) : (
                 <motion.div
                   key="data"
-                  initial={{ opacity: 0, x: 12 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -8 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
                 >
                   <DataView onAskInChat={p => goToChat(p)} />

@@ -29,8 +29,12 @@ export function ObiTabNav({
   };
 
   return (
-    <nav className="w-full border-b" style={{ borderColor: INTEL.border }} aria-label="Intelligence views">
-      <div className="flex">
+    <nav
+      className="w-full flex-shrink-0"
+      style={{ backgroundColor: INTEL.tabBar, minHeight: '72px' }}
+      aria-label="Intelligence views"
+    >
+      <div className="flex w-full h-full min-h-[72px]">
         {TABS.map(item => {
           const active = isActive(item);
           return (
@@ -38,23 +42,35 @@ export function ObiTabNav({
               key={item.id}
               type="button"
               onClick={() => onNavigate(item.view, item.tab)}
-              className="flex-1 text-left px-3 sm:px-4 py-3 transition-colors duration-200 min-w-0"
+              className="flex-1 flex flex-col justify-center px-4 sm:px-6 transition-colors duration-200 min-w-0 text-left"
               style={{
                 borderBottom: active ? `2px solid ${INTEL.text}` : '2px solid transparent',
+                backgroundColor: 'transparent',
               }}
             >
-              <p
-                className="text-xs sm:text-sm font-bold truncate"
-                style={{ color: active ? INTEL.text : INTEL.muted }}
+              <span
+                className="truncate"
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 700,
+                  color: active ? INTEL.text : INTEL.muted,
+                  lineHeight: 1.2,
+                }}
               >
                 {item.label}
-              </p>
-              <p
-                className="text-[10px] sm:text-[11px] truncate mt-0.5 hidden sm:block"
-                style={{ color: active ? INTEL.muted : `${INTEL.muted}99` }}
+              </span>
+              <span
+                className="truncate mt-1"
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 400,
+                  color: INTEL.muted,
+                  lineHeight: 1.2,
+                  opacity: active ? 1 : 0.85,
+                }}
               >
                 {item.subtitle}
-              </p>
+              </span>
             </button>
           );
         })}

@@ -12,14 +12,35 @@ export function IntelTag({ text }: { text: string }) {
   );
 }
 
-export function HeroText({ children }: { children: React.ReactNode }) {
+/** Poster-scale hero — 52px min, extrabold, tight leading */
+export function HeroText({ children, className = '' }: { children: React.ReactNode; className?: string }) {
   return (
     <h1
-      className="font-bold text-white leading-[1.05] tracking-tight"
-      style={{ fontSize: 'clamp(2rem, 5vw, 3.5rem)' }}
+      className={`tracking-tight ${className}`}
+      style={{
+        fontSize: 'clamp(52px, 5vw, 64px)',
+        fontWeight: 800,
+        lineHeight: 1.1,
+        color: '#FFFFFF',
+      }}
     >
       {children}
     </h1>
+  );
+}
+
+export function PosterLine({ children }: { children: React.ReactNode }) {
+  return (
+    <p
+      style={{
+        fontSize: 'clamp(52px, 4.5vw, 56px)',
+        fontWeight: 800,
+        lineHeight: 1.1,
+        color: '#FFFFFF',
+      }}
+    >
+      {children}
+    </p>
   );
 }
 
@@ -99,10 +120,17 @@ export function WhitePillButton({
     <button
       type="button"
       onClick={onClick}
-      className={`px-6 py-3 rounded-full text-sm font-bold whitespace-nowrap transition-all hover:opacity-95 ${
+      className={`whitespace-nowrap transition-all hover:opacity-95 ${
         pulse ? 'intel-btn-glow' : ''
       }`}
-      style={{ backgroundColor: INTEL.text, color: INTEL.bg }}
+      style={{
+        backgroundColor: '#FFFFFF',
+        color: INTEL.bg,
+        borderRadius: '9999px',
+        padding: '12px 24px',
+        fontWeight: 600,
+        fontSize: '14px',
+      }}
     >
       {children}
     </button>
