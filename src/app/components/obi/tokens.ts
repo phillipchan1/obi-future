@@ -9,7 +9,7 @@ export const INTEL = {
   surfaceAlarm: '#1A0608',
   border: '#4A3080',
   accent: '#6B46C1',
-  accentBlue: '#7EB8FF',
+  accentBlue: '#2E75B6',
   text: '#FFFFFF',
   textBody: '#C8D0DC',
   muted: '#A89BC8',

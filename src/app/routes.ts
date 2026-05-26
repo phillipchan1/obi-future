@@ -27,7 +27,7 @@ export const router = createBrowserRouter(
           loader: ({ request }) => {
             const url = new URL(request.url);
             if (!url.searchParams.has("view")) {
-              return redirect("/dashboard?view=leader&tab=intelligence");
+              return redirect("/dashboard?view=leader");
             }
             return null;
           },

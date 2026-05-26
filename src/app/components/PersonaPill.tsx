@@ -26,7 +26,7 @@ export function PersonaPill() {
   const go = (view: PersonaView) => {
     if (view === 'gameplan') navigate('/full');
     else if (view === 'employee') navigate('/dashboard?view=employee');
-    else navigate('/dashboard?view=leader&tab=intelligence');
+    else navigate('/dashboard?view=leader');
   };
 
   return (
