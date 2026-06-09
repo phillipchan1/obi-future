@@ -4,6 +4,7 @@ import { AppLayout } from "./AppLayout";
 import { FullPage } from "./components/FullPage";
 import { MinimalPage } from "./components/MinimalPage";
 import { Dashboard } from "./components/Dashboard";
+import { IntelligencePage } from "./components/IntelligencePage";
 
 export const router = createBrowserRouter(
   [
@@ -32,6 +33,10 @@ export const router = createBrowserRouter(
             return null;
           },
           Component: Dashboard,
+        },
+        {
+          path: "/intelligence",
+          Component: IntelligencePage,
         },
       ],
     },

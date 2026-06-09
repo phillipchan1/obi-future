@@ -1,24 +1,61 @@
 export type ReadinessLevel = 'Beginner' | 'Learner' | 'Familiar' | 'Skilled';
+export type Persona = 'Builder' | 'Explorer' | 'Defender' | 'Designer';
+export type TenureBand = '0-2yr' | '3-5yr' | '5+yr';
+export type DimensionName = 'Prompting Skill' | 'Workflow Impact' | 'Scaling & Enablement' | 'Mindset & Comfort' | 'Usage Frequency';
+export type EngagementStatus = 'Active' | 'Idle' | 'Lapsed';
+export type AssessmentStatus = 'not_started' | 'completed';
+
+export type DimensionScores = {
+  promptingSkill: number;
+  workflowImpact: number;
+  scalingEnablement: number;
+  mindsetComfort: number;
+  usageFrequency: number;
+};
+
+export const DIMENSION_META: { key: keyof DimensionScores; label: DimensionName; weight: number }[] = [
+  { key: 'workflowImpact', label: 'Workflow Impact', weight: 0.30 },
+  { key: 'promptingSkill', label: 'Prompting Skill', weight: 0.25 },
+  { key: 'scalingEnablement', label: 'Scaling & Enablement', weight: 0.25 },
+  { key: 'mindsetComfort', label: 'Mindset & Comfort', weight: 0.12 },
+  { key: 'usageFrequency', label: 'Usage Frequency', weight: 0.08 },
+];
 
 export type EmployeeRecord = {
   id: number;
   name: string;
   department: string;
   title: string;
+  persona: Persona;
+  tenureBand: TenureBand;
   day: number;
-  firstScore: number;
-  finalScore: number;
-  level: ReadinessLevel;
+  assessmentStatus: AssessmentStatus;
+  firstScore: number | null;
+  finalScore: number | null;
+  level: ReadinessLevel | null;
   retook: boolean;
   copilotUsage: number;
   doNowComplete: number;
   doNowTotal: number;
   roleDisruptionPct: number;
   gapScore: number;
+  dimensions: DimensionScores;
+  bottleneck: DimensionName;
+  scoreConfidence: number;
+  assessmentCompletedAt: string | null;
+  lastReassessedAt: string | null;
+  lastActivityAt: string;
+  engagementStatus: EngagementStatus;
+  currentLevelGate: 1 | 2 | 3;
+  coursesCompletedCount: number;
 };
 
 export function formatEmployeeId(id: number): string {
   return `Employee ${String(id).padStart(3, '0')}`;
+}
+
+export function hasCompletedAssessment(e: EmployeeRecord): boolean {
+  return e.assessmentStatus === 'completed';
 }
 
 export const DASHBOARD_COLORS = {
@@ -112,6 +149,11 @@ const NAMES = [
   'Milo Drake', 'Nico Edge', 'Orion Fisk', 'Pia Gould',
 ];
 
+const INVITED_NAMES = [
+  'Rowan Hale', 'Skyler Innes', 'Tegan Joyce', 'Urban Keene',
+  'Vera Lang', 'Weston Moss', 'Xena North',
+];
+
 const DEPTS = ['Product & Design', 'Engineering', 'Operations', 'Customer Success', 'Marketing', 'IT', 'Finance', 'HR'];
 const TITLES = [
   'Senior Product Manager', 'Product Manager II', 'Associate PM', 'Principal PM',
@@ -130,6 +172,43 @@ function disruptionPctForTitle(title: string, i: number): number {
   }
   if (title.includes('Designer') || title.includes('Engineer')) return 65 + (i % 15);
   return 45 + (i % 25);
+}
+
+const PERSONAS: Persona[] = ['Builder', 'Explorer', 'Defender', 'Designer'];
+const TENURE_BANDS: TenureBand[] = ['0-2yr', '3-5yr', '5+yr'];
+
+function buildDimensions(finalScore: number, i: number): { dims: DimensionScores; bottleneck: DimensionName } {
+  const base = Math.round(finalScore / 20);
+  const dims: DimensionScores = {
+    promptingSkill: Math.max(1, Math.min(5, base + (i % 3 === 0 ? -1 : 0))),
+    workflowImpact: Math.max(1, Math.min(5, base + (i % 4 === 0 ? 1 : 0))),
+    scalingEnablement: Math.max(1, Math.min(5, base + (i % 5 === 0 ? -1 : 0) - (i % 7 === 0 ? 1 : 0))),
+    mindsetComfort: Math.max(1, Math.min(5, base + (i % 2 === 0 ? 0 : 1))),
+    usageFrequency: Math.max(1, Math.min(5, base - (i % 6 === 0 ? 1 : 0))),
+  };
+  const entries: [keyof DimensionScores, number][] = Object.entries(dims) as [keyof DimensionScores, number][];
+  const lowest = entries.reduce((a, b) => (b[1] < a[1] ? b : a));
+  const bottleneckMap: Record<keyof DimensionScores, DimensionName> = {
+    promptingSkill: 'Prompting Skill',
+    workflowImpact: 'Workflow Impact',
+    scalingEnablement: 'Scaling & Enablement',
+    mindsetComfort: 'Mindset & Comfort',
+    usageFrequency: 'Usage Frequency',
+  };
+  return { dims, bottleneck: bottleneckMap[lowest[0]] };
+}
+
+function engagementFromDay(day: number, retook: boolean, rolloutDay: number): EngagementStatus {
+  const daysSince = rolloutDay - day;
+  if (retook || daysSince <= 1) return 'Active';
+  if (daysSince <= 3) return 'Idle';
+  return 'Lapsed';
+}
+
+function fakeDate(dayOffset: number): string {
+  const d = new Date('2026-05-16');
+  d.setDate(d.getDate() + dayOffset);
+  return d.toISOString().slice(0, 10);
 }
 
 function buildEmployees(): EmployeeRecord[] {
@@ -158,13 +237,21 @@ function buildEmployees(): EmployeeRecord[] {
     const gapScore = Math.round(roleDisruptionPct - finalScore);
     const copilotUsage = 12 + ((i * 13) % 75);
     const doNowComplete = level === 'Skilled' ? 5 : level === 'Familiar' ? 3 + (i % 3) : level === 'Learner' ? 1 + (i % 3) : i % 2;
+    const day = (i % 5) + 1;
+    const { dims, bottleneck } = buildDimensions(finalScore, i);
+    const confidence = Math.min(1, 0.5 + (retook ? 0.3 : 0) + (day >= 3 ? 0.15 : 0) + ((i * 3) % 10) / 100);
+    const coursesCompletedCount = doNowComplete + Math.max(0, (i % 4) - 1);
+    const gate: 1 | 2 | 3 = level === 'Skilled' ? 3 : level === 'Familiar' ? 2 : 1;
 
     return {
       id: i + 1,
       name,
       department: DEPTS[i % DEPTS.length],
       title,
-      day: (i % 5) + 1,
+      persona: PERSONAS[i % PERSONAS.length],
+      tenureBand: TENURE_BANDS[i % TENURE_BANDS.length],
+      day,
+      assessmentStatus: 'completed',
       firstScore,
       finalScore,
       level,
@@ -174,11 +261,64 @@ function buildEmployees(): EmployeeRecord[] {
       doNowTotal: 5,
       roleDisruptionPct,
       gapScore,
+      dimensions: dims,
+      bottleneck,
+      scoreConfidence: Math.round(confidence * 100) / 100,
+      assessmentCompletedAt: fakeDate(day - 1),
+      lastReassessedAt: retook ? fakeDate(day + 1) : null,
+      lastActivityAt: fakeDate(retook ? day + 2 : day),
+      engagementStatus: engagementFromDay(day, retook, LEADER_STATS.rolloutDay),
+      currentLevelGate: gate,
+      coursesCompletedCount,
     };
   });
 }
 
-export const EMPLOYEES = buildEmployees();
+function buildInvitedEmployees(startId: number): EmployeeRecord[] {
+  return INVITED_NAMES.map((name, i) => {
+    const idx = startId + i;
+    const title = TITLES[i % TITLES.length];
+    const roleDisruptionPct = disruptionPctForTitle(title, idx);
+    const day = LEADER_STATS.rolloutDay;
+
+    return {
+      id: idx,
+      name,
+      department: DEPTS[i % DEPTS.length],
+      title,
+      persona: PERSONAS[i % PERSONAS.length],
+      tenureBand: TENURE_BANDS[i % TENURE_BANDS.length],
+      day,
+      assessmentStatus: 'not_started',
+      firstScore: null,
+      finalScore: null,
+      level: null,
+      retook: false,
+      copilotUsage: 0,
+      doNowComplete: 0,
+      doNowTotal: 5,
+      roleDisruptionPct,
+      gapScore: roleDisruptionPct,
+      dimensions: {
+        promptingSkill: 0,
+        workflowImpact: 0,
+        scalingEnablement: 0,
+        mindsetComfort: 0,
+        usageFrequency: 0,
+      },
+      bottleneck: 'Workflow Impact',
+      scoreConfidence: 0,
+      assessmentCompletedAt: null,
+      lastReassessedAt: null,
+      lastActivityAt: fakeDate(day - (i % 3)),
+      engagementStatus: 'Active',
+      currentLevelGate: 1,
+      coursesCompletedCount: 0,
+    };
+  });
+}
+
+export const EMPLOYEES = [...buildEmployees(), ...buildInvitedEmployees(NAMES.length + 1)];
 
 export const LEVEL_COLORS: Record<ReadinessLevel, string> = {
   Beginner: DASHBOARD_COLORS.red,

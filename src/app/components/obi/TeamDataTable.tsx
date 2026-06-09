@@ -34,7 +34,7 @@ export function TeamDataTable({
         e.department.toLowerCase().includes(q) ||
         e.title.toLowerCase().includes(q) ||
         formatEmployeeId(e.id).toLowerCase().includes(q) ||
-        e.level.toLowerCase().includes(q);
+        e.level?.toLowerCase().includes(q);
       const matchLevel = levelFilter === 'All' || e.level === levelFilter;
       return matchSearch && matchLevel;
     });
@@ -46,7 +46,7 @@ export function TeamDataTable({
       'Delta', 'Level', 'Retook', 'Copilot Usage', 'Do Now Complete', 'Gap Score',
     ];
     const rows = filtered.map(e => {
-      const delta = e.finalScore - e.firstScore;
+      const delta = e.finalScore != null && e.firstScore != null ? e.finalScore - e.firstScore : null;
       return [
         e.id,
         formatEmployeeId(e.id),
@@ -139,7 +139,7 @@ export function TeamDataTable({
           </thead>
           <tbody>
             {filtered.map(e => {
-              const delta = e.finalScore - e.firstScore;
+              const delta = e.finalScore != null && e.firstScore != null ? e.finalScore - e.firstScore : null;
               return (
                 <tr key={e.id} className="border-b last:border-0" style={{ borderColor: 'rgba(255,255,255,0.06)' }}>
                   <td className="px-3 py-2.5" style={{ color: INTEL.muted }}>{e.id}</td>

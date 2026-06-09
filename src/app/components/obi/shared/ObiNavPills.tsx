@@ -1,7 +1,7 @@
 import type { ObiTab, ObiView } from '../tokens';
 
 const LEADER_TABS: { id: ObiTab; label: string }[] = [
-  { id: 'intelligence', label: 'Intelligence' },
+  { id: 'intelligence', label: 'Super Leader Dashboard' },
   { id: 'chat', label: 'Chat' },
   { id: 'data', label: 'Data' },
 ];

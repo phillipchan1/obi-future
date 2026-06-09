@@ -28,7 +28,7 @@ export function DataView({ onAskInChat }: { onAskInChat: (prefill: string) => vo
         e.department.toLowerCase().includes(q) ||
         e.title.toLowerCase().includes(q) ||
         formatEmployeeId(e.id).toLowerCase().includes(q) ||
-        e.level.toLowerCase().includes(q);
+        e.level?.toLowerCase().includes(q);
       const matchLevel = levelFilter === 'All' || e.level === levelFilter;
       return matchSearch && matchLevel;
     });
@@ -40,7 +40,7 @@ export function DataView({ onAskInChat }: { onAskInChat: (prefill: string) => vo
       'Delta', 'Level', 'Retook', 'Copilot Usage', 'Do Now Complete', 'Gap Score',
     ];
     const rows = filtered.map(e => {
-      const delta = e.finalScore - e.firstScore;
+      const delta = e.finalScore != null && e.firstScore != null ? e.finalScore - e.firstScore : null;
       return [
         e.id,
         formatEmployeeId(e.id),
@@ -143,7 +143,7 @@ export function DataView({ onAskInChat }: { onAskInChat: (prefill: string) => vo
           </thead>
           <tbody>
             {filtered.map(e => {
-              const delta = e.finalScore - e.firstScore;
+              const delta = e.finalScore != null && e.firstScore != null ? e.finalScore - e.firstScore : null;
               return (
                 <tr
                   key={e.id}

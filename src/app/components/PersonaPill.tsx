@@ -4,6 +4,7 @@ export type PersonaView = 'gameplan' | 'companyIntel' | 'employee';
 
 export function getActivePersonaView(pathname: string, search: string): PersonaView {
   if (pathname === '/full' || pathname === '/') return 'gameplan';
+  if (pathname === '/intelligence') return 'companyIntel';
   if (pathname === '/dashboard') {
     const params = new URLSearchParams(search);
     return params.get('view') === 'employee' ? 'employee' : 'companyIntel';
@@ -13,7 +14,7 @@ export function getActivePersonaView(pathname: string, search: string): PersonaV
 
 const PILLS: { id: PersonaView; label: string }[] = [
   { id: 'gameplan', label: 'Game Plan' },
-  { id: 'companyIntel', label: 'Intel' },
+  { id: 'companyIntel', label: 'Super Leader' },
   { id: 'employee', label: 'My View' },
 ];
 
@@ -26,7 +27,7 @@ export function PersonaPill() {
   const go = (view: PersonaView) => {
     if (view === 'gameplan') navigate('/full');
     else if (view === 'employee') navigate('/dashboard?view=employee');
-    else navigate('/dashboard?view=leader');
+    else navigate('/intelligence');
   };
 
   return (

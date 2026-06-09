@@ -8,7 +8,7 @@ const TABS: {
   label: string;
   subtitle: string;
 }[] = [
-  { id: 'intelligence', view: 'leader', tab: 'intelligence', label: 'Intelligence', subtitle: "Obi's briefing" },
+  { id: 'intelligence', view: 'leader', tab: 'intelligence', label: 'Super Leader Dashboard', subtitle: 'Org readiness overview' },
   { id: 'chat', view: 'leader', tab: 'chat', label: 'Chat', subtitle: 'Ask anything' },
   { id: 'data', view: 'leader', tab: 'data', label: 'Data', subtitle: 'Raw records' },
   { id: 'myview', view: 'employee', label: 'My View', subtitle: 'Your journey' },
@@ -32,7 +32,7 @@ export function ObiTabNav({
     <nav
       className="w-full flex-shrink-0"
       style={{ backgroundColor: INTEL.tabBar, minHeight: '72px' }}
-      aria-label="Intelligence views"
+      aria-label="Super Leader Dashboard views"
     >
       <div className="flex w-full h-full min-h-[72px]">
         {TABS.map(item => {
