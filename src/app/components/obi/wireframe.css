@@ -1,0 +1,21 @@
+/* Scoped soft overrides for intelligence wireframe views */
+.intelligence-wireframe {
+  color: var(--wf-text);
+  background: var(--wf-bg);
+}
+
+.intelligence-wireframe .border-black {
+  border-color: var(--wf-border) !important;
+}
+
+.intelligence-wireframe .border-b-2.border-black {
+  border-bottom-color: var(--wf-border-strong) !important;
+}
+
+.intelligence-wireframe .border-t-2.border-black {
+  border-top-color: var(--wf-border-strong) !important;
+}
+
+.intelligence-wireframe .border-2.border-black {
+  border-color: var(--wf-border-strong) !important;
+}

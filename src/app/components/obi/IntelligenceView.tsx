@@ -20,10 +20,15 @@ import {
   type ReadinessLevel,
   type EmployeeRecord,
 } from '../../../data/dashboard';
-import { WF, WF_LEVEL } from './wireframe-theme';
+import { WF, WF_LEVEL, WF_CSS_VARS, wfTabActiveStyle, wfTabInactiveStyle } from './wireframe-theme';
 import { FilterChipRow, MultiSelectFilter, type FilterOption } from './shared/MultiSelectFilter';
 import { ColumnPicker } from './shared/ColumnPicker';
+import { OrgTreeView } from './OrgTreeView';
+import { ExecIntelligenceView } from './ExecIntelligenceView';
 import { getObiResponse } from '../../../data/obi-intelligence';
+import './wireframe.css';
+
+type IntelligenceViewMode = 'table' | 'org-tree' | 'exec-brief';
 
 // ─── Sorts & helpers ───────────────────────────────────────────────────────────
 
@@ -293,7 +298,10 @@ function WireframeChatMessage({
   }
   const response = getExecResponse(item.query);
   return (
-    <div className="border-2 border-dashed border-black p-3 text-xs" style={{ background: WF.surface }}>
+    <div
+      className="border-2 border-dashed p-3 text-xs rounded-sm"
+      style={{ background: WF.surfaceMuted, borderColor: WF.borderStrong }}
+    >
       <span className="font-bold block mb-1 uppercase tracking-wide text-[10px]">[ Obi ]</span>
       <p className="leading-relaxed">{response.summary}</p>
       {response.followUps && response.followUps.length > 0 && (
@@ -437,6 +445,7 @@ function ExpandedDetail({ e, colSpan }: { e: EmployeeRecord; colSpan: number }) 
 // ─── Main view ─────────────────────────────────────────────────────────────────
 
 export function IntelligenceView() {
+  const [viewMode, setViewMode] = useState<IntelligenceViewMode>('exec-brief');
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('finalScore');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
@@ -503,6 +512,14 @@ export function IntelligenceView() {
     setMessages(prev => [...prev, { type: 'user', text: trimmed }, { type: 'obi', query: trimmed }]);
     setChatInput('');
   }, []);
+
+  const handleAskObi = useCallback(
+    (text: string) => {
+      setChatOpen(true);
+      sendMessage(text);
+    },
+    [sendMessage],
+  );
 
   useEffect(() => {
     listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
@@ -619,13 +636,22 @@ export function IntelligenceView() {
   }, []);
 
   return (
-    <div className="fixed inset-0 flex" style={{ fontFamily: WF.font, background: WF.bg, color: WF.text }}>
-      <div className="flex-1 flex flex-col min-w-0 border-r border-black">
-        <header className="flex-none px-6 py-4 border-b border-black flex items-center justify-between gap-4" style={{ background: WF.bg }}>
+    <div
+      className="intelligence-wireframe fixed inset-0 flex"
+      style={{ fontFamily: WF.font, background: WF.bg, color: WF.text, ...WF_CSS_VARS }}
+    >
+      <div className="flex-1 flex flex-col min-w-0" style={{ borderRight: `1px solid ${WF.border}` }}>
+        <header
+          className="flex-none px-6 py-4 flex items-center justify-between gap-4"
+          style={{ background: WF.surface, borderBottom: `1px solid ${WF.border}` }}
+        >
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-lg font-bold">Super Leader Dashboard</h1>
-              <span className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 border border-black" style={{ background: WF.fill }}>
+              <h1 className="text-lg font-semibold" style={{ color: WF.text }}>Super Leader Dashboard</h1>
+              <span
+                className="text-[9px] font-medium uppercase tracking-widest px-2 py-0.5"
+                style={{ background: WF.surfaceMuted, color: WF.muted, border: `1px solid ${WF.border}` }}
+              >
                 Paper prototype
               </span>
             </div>
@@ -637,8 +663,8 @@ export function IntelligenceView() {
             <button
               type="button"
               onClick={exportCsv}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-black"
-              style={{ background: WF.bg }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium"
+              style={{ background: WF.surface, border: `1px solid ${WF.borderStrong}`, color: WF.textSecondary }}
             >
               <Download size={12} />
               Export
@@ -646,10 +672,11 @@ export function IntelligenceView() {
             <button
               type="button"
               onClick={() => setChatOpen(o => !o)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold border border-black"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold"
               style={{
-                background: chatOpen ? WF.fillActive : WF.bg,
-                color: chatOpen ? WF.textOnActive : WF.text,
+                background: chatOpen ? WF.fillActive : WF.surface,
+                color: chatOpen ? WF.textOnActive : WF.textSecondary,
+                border: `1px solid ${chatOpen ? WF.fillActive : WF.borderStrong}`,
               }}
             >
               <MessageSquare size={12} />
@@ -658,6 +685,44 @@ export function IntelligenceView() {
           </div>
         </header>
 
+        <div
+          className="flex-none px-6 py-2 flex gap-1"
+          style={{ background: WF.bg, borderBottom: `1px solid ${WF.border}` }}
+        >
+          {([
+            { id: 'exec-brief' as const, label: 'Executive Brief', hint: 'Spoonfed intelligence' },
+            { id: 'org-tree' as const, label: 'Org Tree', hint: 'Hierarchy & pocket selection' },
+            { id: 'table' as const, label: 'Data Table', hint: 'Filters & sortable records' },
+          ]).map(tab => (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setViewMode(tab.id)}
+              className="px-3 py-2 text-left min-w-[120px] border-b-2"
+              style={viewMode === tab.id ? wfTabActiveStyle : wfTabInactiveStyle}
+            >
+              <span
+                className="block text-xs font-semibold"
+                style={{ color: viewMode === tab.id ? WF.text : WF.muted }}
+              >
+                {tab.label}
+              </span>
+              <span
+                className="block text-[9px] mt-0.5 uppercase tracking-wider"
+                style={{ color: viewMode === tab.id ? WF.textSecondary : WF.muted }}
+              >
+                {tab.hint}
+              </span>
+            </button>
+          ))}
+        </div>
+
+        {viewMode === 'exec-brief' ? (
+          <ExecIntelligenceView onAskObi={handleAskObi} />
+        ) : viewMode === 'org-tree' ? (
+          <OrgTreeView />
+        ) : (
+          <>
         <div className="flex-none px-5 py-3 flex flex-wrap items-center gap-2 border-b border-black">
           <div className="flex items-center gap-1.5 mr-1">
             <SlidersHorizontal size={12} style={{ color: WF.muted }} />
@@ -819,17 +884,40 @@ export function IntelligenceView() {
             </tfoot>
           </table>
         </div>
+          </>
+        )}
       </div>
 
       {chatOpen && (
-        <div className="flex-none flex flex-col border-l border-black" style={{ width: '400px', background: WF.bg }}>
-          <div className="flex-none flex items-center justify-between px-4 py-3 border-b border-black">
+        <div
+          className="flex-none flex flex-col"
+          style={{ width: '400px', background: WF.surface, borderLeft: `1px solid ${WF.border}` }}
+        >
+          <div
+            className="flex-none flex items-center justify-between px-4 py-3"
+            style={{ borderBottom: `1px solid ${WF.border}` }}
+          >
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 border border-black flex items-center justify-center text-[9px] font-bold">O</div>
-              <span className="text-sm font-semibold">Obi</span>
-              <span className="text-[9px] px-1.5 py-0.5 border border-black font-medium uppercase">Chat panel</span>
+              <div
+                className="w-6 h-6 flex items-center justify-center text-[9px] font-semibold rounded-sm"
+                style={{ border: `1px solid ${WF.borderStrong}`, background: WF.surfaceMuted, color: WF.textSecondary }}
+              >
+                O
+              </div>
+              <span className="text-sm font-semibold" style={{ color: WF.text }}>Obi</span>
+              <span
+                className="text-[9px] px-1.5 py-0.5 font-medium uppercase rounded-sm"
+                style={{ background: WF.surfaceMuted, color: WF.muted, border: `1px solid ${WF.border}` }}
+              >
+                Chat panel
+              </span>
             </div>
-            <button type="button" onClick={() => setChatOpen(false)} className="p-1 border border-black">
+            <button
+              type="button"
+              onClick={() => setChatOpen(false)}
+              className="p-1 rounded-sm"
+              style={{ border: `1px solid ${WF.border}`, background: WF.surface }}
+            >
               <X size={14} />
             </button>
           </div>
