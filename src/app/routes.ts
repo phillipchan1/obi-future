@@ -5,6 +5,7 @@ import { FullPage } from "./components/FullPage";
 import { MinimalPage } from "./components/MinimalPage";
 import { Dashboard } from "./components/Dashboard";
 import { IntelligencePage } from "./components/IntelligencePage";
+import { ReadinessWrappedPage } from "./components/ReadinessWrappedPage";
 
 export const router = createBrowserRouter(
   [
@@ -37,6 +38,10 @@ export const router = createBrowserRouter(
         {
           path: "/intelligence",
           Component: IntelligencePage,
+        },
+        {
+          path: "/readiness-wrapped",
+          Component: ReadinessWrappedPage,
         },
       ],
     },

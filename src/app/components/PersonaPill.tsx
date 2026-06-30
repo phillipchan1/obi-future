@@ -1,9 +1,10 @@
 import { useLocation, useNavigate } from 'react-router';
 
-export type PersonaView = 'gameplan' | 'companyIntel' | 'employee';
+export type PersonaView = 'gameplan' | 'companyIntel' | 'readinessWrapped' | 'employee';
 
 export function getActivePersonaView(pathname: string, search: string): PersonaView {
   if (pathname === '/full' || pathname === '/') return 'gameplan';
+  if (pathname === '/readiness-wrapped') return 'readinessWrapped';
   if (pathname === '/intelligence') return 'companyIntel';
   if (pathname === '/dashboard') {
     const params = new URLSearchParams(search);
@@ -15,6 +16,7 @@ export function getActivePersonaView(pathname: string, search: string): PersonaV
 const PILLS: { id: PersonaView; label: string }[] = [
   { id: 'gameplan', label: 'Game Plan' },
   { id: 'companyIntel', label: 'Super Leader' },
+  { id: 'readinessWrapped', label: 'AI Readiness' },
   { id: 'employee', label: 'My View' },
 ];
 
@@ -27,12 +29,13 @@ export function PersonaPill() {
   const go = (view: PersonaView) => {
     if (view === 'gameplan') navigate('/full');
     else if (view === 'employee') navigate('/dashboard?view=employee');
+    else if (view === 'readinessWrapped') navigate('/readiness-wrapped');
     else navigate('/intelligence');
   };
 
   return (
     <div
-      className="group fixed bottom-5 right-5 z-[9999] flex flex-col items-end gap-1 pointer-events-auto opacity-[0.22] hover:opacity-90 focus-within:opacity-90 transition-opacity duration-300"
+      className="group fixed bottom-5 left-1/2 -translate-x-1/2 z-[9999] flex flex-col items-center gap-1 pointer-events-auto opacity-[0.22] hover:opacity-90 focus-within:opacity-90 transition-opacity duration-300"
       aria-label="Prototype view switcher"
     >
       <span className="text-[8px] font-medium uppercase tracking-widest text-white/30 group-hover:text-white/50 px-1 transition-colors">
