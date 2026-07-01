@@ -15,6 +15,7 @@ import {
   type Confidence,
   type InsightCard,
 } from '../../../../data/readiness-wrapped';
+import { AskObiDrawer, useAskObi } from './AskObiDrawer';
 import { CONFIDENCE_STYLES, RW } from './theme';
 
 const sidebarItems = ['Dashboard', 'Readiness', 'Usage', 'Actions'];
@@ -86,12 +87,20 @@ function MetricCard({
   );
 }
 
-function InsightPanel({ card }: Readonly<{ card: InsightCard }>) {
+function InsightPanel({ card, onAsk }: Readonly<{ card: InsightCard; onAsk: () => void }>) {
   return (
-    <article
-      className="rounded-xl border p-5"
+    <button
+      type="button"
+      onClick={onAsk}
+      className="group relative w-full rounded-xl border p-5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       style={{ backgroundColor: RW.purpleBg, borderColor: RW.purpleBorder, boxShadow: RW.cardShadow }}
     >
+      <span
+        className="absolute right-3 top-3 text-[10px] font-medium opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+        style={{ color: RW.purpleText }}
+      >
+        ✦ ask Obi
+      </span>
       <div className="mb-2 flex items-center justify-between gap-3">
         <p className="text-[10px] font-semibold uppercase tracking-wide" style={{ color: RW.purpleText }}>
           AI synthesis
@@ -109,13 +118,24 @@ function InsightPanel({ card }: Readonly<{ card: InsightCard }>) {
           {card.footnote}
         </p>
       )}
-    </article>
+    </button>
   );
 }
 
-function ActionPanel({ card }: Readonly<{ card: ActionCard }>) {
+function ActionPanel({ card, onAsk }: Readonly<{ card: ActionCard; onAsk: () => void }>) {
   return (
-    <article className="rounded-xl border p-5" style={{ backgroundColor: RW.card, borderColor: RW.border, boxShadow: RW.cardShadow }}>
+    <button
+      type="button"
+      onClick={onAsk}
+      className="group relative w-full rounded-xl border p-5 text-left transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+      style={{ backgroundColor: RW.card, borderColor: RW.border, boxShadow: RW.cardShadow }}
+    >
+      <span
+        className="absolute right-3 top-3 text-[10px] font-medium opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100"
+        style={{ color: RW.purpleText }}
+      >
+        ✦ ask Obi
+      </span>
       <div className="mb-3 flex flex-wrap gap-1.5">
         <MetaPill label={card.timing} tone="green" />
         <MetaPill label={card.impact} tone="neutral" />
@@ -144,7 +164,7 @@ function ActionPanel({ card }: Readonly<{ card: ActionCard }>) {
           ))}
         </ul>
       </div>
-    </article>
+    </button>
   );
 }
 
@@ -217,6 +237,7 @@ function UsageBar({ level, people, chatsPerQtr }: Readonly<{ level: string; peop
 
 export function ReadinessVerticalDashboard() {
   const topInsights = [...SCENE1_INSIGHTS, ...SCENE2_INSIGHTS].slice(0, 6);
+  const askObi = useAskObi();
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: RW.pageBg, color: RW.text, fontFamily: RW.font }}>
@@ -257,15 +278,23 @@ export function ReadinessVerticalDashboard() {
                 {ORG.name}
               </h1>
               <p className="mt-1 text-sm" style={{ color: RW.textSecondary }}>
-                Same readiness data, presented as a scannable leader dashboard for A/B testing.
+                {ORG.leader}&apos;s view, presented as a scannable leader dashboard for A/B testing.
               </p>
             </div>
-            <div className="flex flex-wrap gap-2 text-xs" style={{ color: RW.textSecondary }}>
+            <div className="flex flex-wrap items-center gap-2 text-xs" style={{ color: RW.textSecondary }}>
               <span>{ORG.peopleInScope} people in scope</span>
               <span>·</span>
-              <span>{ORG.departmentsCount} departments</span>
+              <span>{ORG.departmentsCount} teams</span>
               <span>·</span>
               <span>{ORG.assessed} assessed</span>
+              <button
+                type="button"
+                onClick={askObi.openGeneral}
+                className="ml-0 rounded-full px-3 py-1.5 text-xs font-semibold transition-opacity hover:opacity-90 md:ml-2"
+                style={{ backgroundColor: RW.sidebar, color: '#fff' }}
+              >
+                Ask Obi
+              </button>
             </div>
           </div>
         </header>
@@ -280,21 +309,27 @@ export function ReadinessVerticalDashboard() {
         <section className="mb-6">
           <SectionTitle>Systemic intelligence</SectionTitle>
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-            {topInsights.slice(0, 2).map(card => <InsightPanel key={card.id} card={card} />)}
+            {topInsights.slice(0, 2).map(card => (
+              <InsightPanel key={card.id} card={card} onAsk={() => askObi.openFromInsight(card)} />
+            ))}
           </div>
         </section>
 
         <section className="mb-6">
           <SectionTitle>Top recommendations</SectionTitle>
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-            {ACTION_CARDS.slice(0, 4).map(card => <ActionPanel key={card.id} card={card} />)}
+            {ACTION_CARDS.slice(0, 4).map(card => (
+              <ActionPanel key={card.id} card={card} onAsk={() => askObi.openFromAction(card)} />
+            ))}
           </div>
         </section>
 
         <section className="mb-6">
           <SectionTitle>Other key insights</SectionTitle>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-            {topInsights.slice(2).map(card => <InsightPanel key={card.id} card={card} />)}
+            {topInsights.slice(2).map(card => (
+              <InsightPanel key={card.id} card={card} onAsk={() => askObi.openFromInsight(card)} />
+            ))}
           </div>
         </section>
 
@@ -349,7 +384,7 @@ export function ReadinessVerticalDashboard() {
           </div>
 
           <div className="rounded-xl border p-5" style={{ backgroundColor: RW.card, borderColor: RW.border, boxShadow: RW.cardShadow }}>
-            <SectionTitle>Department detail</SectionTitle>
+            <SectionTitle>Team detail</SectionTitle>
             <div className="space-y-3">
               {ORG.departments.map(dept => <DepartmentBar key={dept.name} name={dept.name} score={dept.score} />)}
             </div>
@@ -359,10 +394,13 @@ export function ReadinessVerticalDashboard() {
         <section className="mb-20">
           <SectionTitle>Remaining recommended actions</SectionTitle>
           <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
-            {ACTION_CARDS.slice(4).map(card => <ActionPanel key={card.id} card={card} />)}
+            {ACTION_CARDS.slice(4).map(card => (
+              <ActionPanel key={card.id} card={card} onAsk={() => askObi.openFromAction(card)} />
+            ))}
           </div>
         </section>
       </main>
+      <AskObiDrawer open={askObi.open} onClose={askObi.close} context={askObi.context} />
     </div>
   );
 }

@@ -1,13 +1,14 @@
 /** Demo org seed — single source of truth for Readiness Wrapped prototype */
 
 export const ORG = {
-  name: 'Digital & Technology Division',
-  peopleInScope: 812,
-  departmentsCount: 7,
-  assessed: 340,
+  name: 'Digital and Process Transformation',
+  leader: 'Tricia',
+  peopleInScope: 55,
+  departmentsCount: 6,
+  assessed: 34,
   readinessAvg: 71,
   bands: { Beginner: [1, 30], Learner: [31, 55], Familiar: [56, 75], Skilled: [76, 100] },
-  levels: { Skilled: 96, Familiar: 122, Learner: 88, Beginner: 34 },
+  levels: { Skilled: 10, Familiar: 12, Learner: 9, Beginner: 3 },
   dimensions: [
     { name: 'Mindset & Comfort', v: 4.1 },
     { name: 'Prompting Skill', v: 3.5 },
@@ -16,39 +17,37 @@ export const ORG = {
     { name: 'Scaling & Enablement', v: 2.6, weakest: true },
   ],
   departments: [
-    { name: 'Engineering', score: 82, n: 118, note: 'edge is specifically their Scaling score' },
-    { name: 'Product & Design', score: 78, n: 46 },
-    { name: 'Cybersecurity', score: 74, n: 38 },
-    { name: 'Data & Analytics', score: 68, n: 52 },
-    { name: 'IT Operations', score: 64, n: 44 },
-    { name: 'Business Analysis', score: 54, n: 24 },
-    { name: 'Finance Systems', score: 49, n: 18 },
+    { name: 'Digital Transformation', score: 82, n: 9, note: 'edge is specifically their Scaling score' },
+    { name: 'Process Transformation', score: 76, n: 8 },
+    { name: 'Automation & AI Enablement', score: 72, n: 6 },
+    { name: 'Data & Insights', score: 68, n: 5 },
+    { name: 'Change Enablement', score: 61, n: 4 },
+    { name: 'Portfolio Operations', score: 54, n: 2 },
   ],
   copilot: {
-    licensed: 512,
-    active: 318,
-    dormant: 194,
-    unlicensed: 300,
-    agents: 47,
-    builders: 14,
+    licensed: 42,
+    active: 27,
+    dormant: 15,
+    unlicensed: 13,
+    agents: 8,
+    builders: 4,
     skilledChatsPerQtr: 22,
     beginnerChatsPerQtr: 3,
   },
   roles: {
     top: [
-      { name: 'Software Engineer', n: 70 },
-      { name: 'Business Analyst', n: 40 },
-      { name: 'Data Analyst', n: 30 },
-      { name: 'IT Support Specialist', n: 28 },
-      { name: 'Product Manager', n: 20 },
-      { name: 'QA Engineer', n: 18 },
-      { name: 'Cybersecurity Analyst', n: 16 },
-      { name: 'UX Designer', n: 14 },
-      { name: 'Solutions Architect', n: 12 },
+      { name: 'Program Manager', n: 7 },
+      { name: 'Business Process Analyst', n: 6 },
+      { name: 'Product Manager', n: 4 },
+      { name: 'Data Analyst', n: 3 },
+      { name: 'Change Manager', n: 3 },
+      { name: 'Automation Specialist', n: 2 },
+      { name: 'UX Designer', n: 1 },
+      { name: 'Solutions Architect', n: 1 },
     ],
-    tailRoles: 14,
-    tailPeople: 92,
-    analystClusterPeople: 86,
+    tailRoles: 5,
+    tailPeople: 7,
+    analystClusterPeople: 9,
   },
 } as const;
 
@@ -143,13 +142,13 @@ export const SCENE1_INSIGHTS: InsightCard[] = [
     id: 's1-spread',
     title: "It's a spread problem, not an average",
     confidence: 'Measured',
-    body: 'A cluster of 96 Skilled pulls the mean up while 122 sit at Learner or below. The 71 hides two very different populations.',
+    body: 'A cluster of 10 Skilled pulls the mean up while 12 sit at Learner or below. The 71 hides two very different populations.',
   },
   {
     id: 's1-bright',
     title: 'Your bright spot',
     confidence: 'Measured',
-    body: "Engineering leads at 82 — and it's their Scaling score that separates them. They've cracked the exact thing everyone else is stuck on.",
+    body: "Digital Transformation leads at 82 — and it's their Scaling score that separates them. They've cracked the exact thing everyone else is stuck on.",
     footnote: 'Remember this — it pays off in the game plan.',
   },
 ];
@@ -159,7 +158,7 @@ export const SCENE2_INSIGHTS: InsightCard[] = [
     id: 's2-waste',
     title: 'License waste',
     confidence: 'Measured',
-    body: '194 people hold a Copilot license but show near-zero usage — 38% of paid seats idle. A budget line you can act on today.',
+    body: '15 people hold a Copilot license but show near-zero usage — 36% of paid seats idle. A budget line you can act on today.',
   },
   {
     id: 's2-lever',
@@ -169,16 +168,16 @@ export const SCENE2_INSIGHTS: InsightCard[] = [
   },
   {
     id: 's2-builders',
-    title: 'Your 14 builders',
+    title: 'Your 4 builders',
     confidence: 'Estimated',
-    body: '14 people have built 47 agents. At a conservative 2.5 hours saved per agent per month, that is about 353 hours/quarter before broader rollout.',
+    body: '4 people have built 8 agents. At a conservative 2.5 hours saved per agent per month, that is about 60 hours/quarter before broader rollout.',
     footnote: 'Estimated from prototype assumptions; the builder count is measured.',
   },
   {
     id: 's2-maximization',
     title: 'AI maximization gap',
     confidence: 'Estimated',
-    body: 'Your current AI Maximization signal is 44%: active-license rate multiplied by readiness average. The gap is not tool access alone — it is readiness converting into repeat usage.',
+    body: 'Your current AI Maximization signal is 46%: active-license rate multiplied by readiness average. The gap is not tool access alone — it is readiness converting into repeat usage.',
     footnote: 'Prototype index: active licensed users × readiness average.',
   },
 ];
@@ -188,13 +187,13 @@ export const SCENE3_INSIGHTS: InsightCard[] = [
     id: 's3-concentration',
     title: 'Concentrated, not sprawling',
     confidence: 'Measured',
-    body: 'Your top 5 roles cover over half your people; a long tail of 18 roles makes up the rest. Concentration means enablement can be targeted.',
+    body: 'Your top 5 roles cover most of your assessed people; a long tail of 5 roles makes up the rest. Concentration means enablement can be targeted.',
   },
   {
     id: 's3-analyst',
     title: 'An analyst-heavy core',
     confidence: 'Measured',
-    body: 'Business, Data and Cybersecurity Analysts are your single largest function — 86 people doing knowledge- and language-heavy work.',
+    body: 'Business Process and Data Analysts are your largest analytical cluster — 9 people doing knowledge- and language-heavy work.',
   },
   {
     id: 's3-copilot',
@@ -209,12 +208,12 @@ export const ACTION_CARDS: ActionCard[] = [
   {
     id: 'a1',
     title: 'Launch peer-led scaling sprints',
-    description: 'Connect the 14 builders to teams stuck on scaling.',
+    description: 'Connect the 4 builders to teams stuck on scaling.',
     why: 'This is the highest-leverage bridge between readiness and repeatable adoption.',
     evidence: [
       'Scaling & Enablement is the weakest dimension at 2.6/5',
-      'Engineering leads at 82 and is strongest on scaling',
-      '14 builders have already created 47 agents',
+      'Digital Transformation leads at 82 and is strongest on scaling',
+      '4 builders have already created 8 agents',
     ],
     timing: 'Do now',
     impact: 'High impact',
@@ -223,13 +222,13 @@ export const ACTION_CARDS: ActionCard[] = [
   },
   {
     id: 'a2',
-    title: 'Reclaim 194 dormant licenses',
+    title: 'Reclaim 15 dormant licenses',
     description: 'Activation push + reallocate cold seats.',
     why: 'Paid access is not converting into usage, so this is the fastest operational unlock.',
     evidence: [
-      '194 of 512 licensed seats are dormant',
-      '38% of paid seats show near-zero usage',
-      'AI Maximization is only 44% despite readiness avg 71',
+      '15 of 42 licensed seats are dormant',
+      '36% of paid seats show near-zero usage',
+      'AI Maximization is only 46% despite readiness avg 71',
     ],
     timing: 'Do now',
     impact: 'High',
@@ -239,11 +238,11 @@ export const ACTION_CARDS: ActionCard[] = [
   {
     id: 'a3',
     title: 'Focus enablement on your biggest cluster',
-    description: 'Analysts (86 people), most leverage per program.',
+    description: 'Analysts (9 people), most leverage per program.',
     why: 'A targeted program beats broad enablement because the work is concentrated.',
     evidence: [
-      'Business, Data, and Cyber Analysts total 86 people',
-      'Top 5 roles cover 188 assessed people',
+      'Business Process and Data Analysts total 9 people',
+      'Top 5 roles cover 23 assessed people',
       'Analyst work is knowledge- and language-heavy',
     ],
     timing: 'Do now',
@@ -253,11 +252,11 @@ export const ACTION_CARDS: ActionCard[] = [
   },
   {
     id: 'a4',
-    title: "Codify Engineering's playbook",
+    title: "Codify Digital Transformation's playbook",
     description: 'Document what makes their scaling work; make it repeatable.',
     why: 'The strongest team appears to have solved the org-wide bottleneck.',
     evidence: [
-      'Engineering readiness is 82 vs org avg 71',
+      'Digital Transformation readiness is 82 vs org avg 71',
       'Their edge is specifically the Scaling score',
       'Scaling is the org’s weakest dimension at 2.6/5',
     ],
@@ -274,7 +273,7 @@ export const ACTION_CARDS: ActionCard[] = [
     evidence: [
       'Skilled users average 22 chats/qtr vs Beginners at 3',
       'Usage Frequency trails Mindset: 3.0 vs 4.1',
-      '122 Familiar users are close to higher leverage',
+      '12 Familiar users are close to higher leverage',
     ],
     timing: 'Do later',
     impact: 'Med',
@@ -284,11 +283,11 @@ export const ACTION_CARDS: ActionCard[] = [
   {
     id: 'a6',
     title: 'Close the assessment gap',
-    description: 'Reading 340 of 812; push completion for a whole-org picture.',
+    description: 'Reading 34 of 55; push completion for a whole-team picture.',
     why: 'The story is directional until more of the org is represented.',
     evidence: [
-      '340 of 812 people assessed',
-      '42% current coverage',
+      '34 of 55 people assessed',
+      '62% current coverage',
       'Momentum tracking unlocks after reassessments accrue',
     ],
     timing: 'Do later',
@@ -300,22 +299,22 @@ export const ACTION_CARDS: ActionCard[] = [
 
 export const FOLLOW_UP_QUESTIONS: Record<string, string[]> = {
   's1-shape': [
-    'Which departments are weakest on Scaling?',
+    'Which teams are weakest on Scaling?',
     'What would move the Scaling score fastest?',
     "Who's already strong on Scaling?",
   ],
   's1-spread': [
-    'Show readiness distribution by department.',
+    'Show readiness distribution by team.',
     'Which teams have the widest internal spread?',
     'How many people are one band from Skilled?',
   ],
   's1-bright': [
-    "What makes Engineering's Scaling score higher?",
-    'Which Engineering practices could transfer?',
-    'Compare Engineering to the org average by dimension.',
+    "What makes Digital Transformation's Scaling score higher?",
+    'Which Digital Transformation practices could transfer?',
+    'Compare Digital Transformation to the org average by dimension.',
   ],
   's2-waste': [
-    'Which departments have the most idle licenses?',
+    'Which teams have the most idle licenses?',
     "Who's licensed but inactive?",
     "What's the annual cost of the dormant seats?",
   ],
@@ -325,7 +324,7 @@ export const FOLLOW_UP_QUESTIONS: Record<string, string[]> = {
     'What usage level predicts Skilled?',
   ],
   's2-builders': [
-    'Who are the 14 builders?',
+    'Who are the 4 builders?',
     'Which teams have no builders?',
     'What have the builders automated?',
   ],
@@ -335,12 +334,12 @@ export const FOLLOW_UP_QUESTIONS: Record<string, string[]> = {
     'Where is readiness not turning into usage?',
   ],
   's3-concentration': [
-    'List all 23 roles by headcount.',
+    'List all 13 roles by headcount.',
     'Which roles are in the long tail?',
-    'How concentrated is each department?',
+    'How concentrated is each team?',
   ],
   's3-analyst': [
-    'Break down the analyst roles by department.',
+    'Break down the analyst roles by team.',
     "What's the readiness of analyst roles?",
     'Which analyst group is largest?',
   ],
@@ -353,13 +352,13 @@ export const FOLLOW_UP_QUESTIONS: Record<string, string[]> = {
 };
 
 export const GENERAL_ASK_OBI_QUESTIONS = [
-  'Which department needs the most help?',
+  'Which team needs the most help?',
   "Where's my biggest quick win?",
   'Summarize the top risk in one line.',
 ];
 
 export const COPILOT_HANDOFF_PROMPT =
-  "Here's the role composition of my team (Digital & Technology Division, 340 people across 23 roles): Software Engineer (70), Business Analyst (40), Data Analyst (30), IT Support Specialist (28), Product Manager (20), QA Engineer (18), Cybersecurity Analyst (16), UX Designer (14), Solutions Architect (12), plus 14 other roles (92 people). How are these roles likely to change as AI tools mature over the next 1–2 years? For each major group, which tasks are most likely to shift, and what skills should they build?";
+  "Here's the role composition of my team (Digital and Process Transformation, 34 assessed people across 13 roles): Program Manager (7), Business Process Analyst (6), Product Manager (4), Data Analyst (3), Change Manager (3), Automation Specialist (2), UX Designer (1), Solutions Architect (1), plus 5 other roles (7 people). How are these roles likely to change as AI tools mature over the next 1–2 years? For each major group, which tasks are most likely to shift, and what skills should they build?";
 
 export function buildActionCopilotPrompt(action: ActionCard): string {
   return `I am an enterprise leader reviewing my AI readiness dashboard for ${ORG.name}. Help me brainstorm and pressure-test this recommended move:
@@ -376,7 +375,7 @@ Relevant org data:
 - Average readiness: ${ORG.readinessAvg}/100
 - Readiness levels: Skilled ${ORG.levels.Skilled}, Familiar ${ORG.levels.Familiar}, Learner ${ORG.levels.Learner}, Beginner ${ORG.levels.Beginner}
 - Weakest readiness dimension: Scaling & Enablement at 2.6/5
-- Strongest department signal: Engineering readiness ${ORG.departments[0].score}; their edge is scaling
+- Strongest team signal: ${ORG.departments[0].name} readiness ${ORG.departments[0].score}; their edge is scaling
 - Copilot: ${ORG.copilot.licensed} licensed, ${ORG.copilot.active} active, ${ORG.copilot.dormant} dormant, ${ORG.copilot.unlicensed} unlicensed
 - Builder signal: ${ORG.copilot.builders} builders have created ${ORG.copilot.agents} agents
 - AI Maximization signal: ${aiMaximizationPct}% (active-license rate multiplied by readiness average)

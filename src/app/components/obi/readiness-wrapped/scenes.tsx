@@ -83,7 +83,7 @@ export function SceneCover({ active }: Readonly<{ active: boolean }>) {
             {depts}
           </p>
           <p className="text-xs uppercase tracking-wide mt-1" style={{ color: RW.muted }}>
-            departments
+            teams
           </p>
         </div>
         <div className="w-px hidden sm:block" style={{ backgroundColor: RW.border }} />
@@ -98,7 +98,7 @@ export function SceneCover({ active }: Readonly<{ active: boolean }>) {
       </div>
 
       <p className="text-sm font-medium mb-4" style={{ color: RW.textSecondary }}>
-        {ORG.name}
+        {ORG.leader}&apos;s view · {ORG.name}
       </p>
       <p className="text-xs animate-pulse" style={{ color: RW.muted }}>
         Click anywhere or press Next to begin →
@@ -407,7 +407,7 @@ export function SceneRoles({ active, onAskInsight }: SceneProps) {
       <header style={{ animation: active ? 'rw-rise 0.5s ease both' : undefined }}>
         <SectionEyebrow accentColor={accent.text}>03 · Where&apos;s the work going</SectionEyebrow>
         <h2 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: RW.text }}>
-          23 roles — but the work runs through a handful.
+          {ORG.roles.top.length + ORG.roles.tailRoles} roles — but the work runs through a handful.
         </h2>
       </header>
 
