@@ -119,18 +119,16 @@ export const aiMaximizationPct = Math.round(
 export const QUESTION_TRACKER = [
   { label: 'Where are my people?', sceneIndex: 1 },
   { label: 'How are they progressing?', sceneIndex: 2 },
-  { label: "Where's the work going?", sceneIndex: 3 },
-  { label: 'What actions should we take?', sceneIndex: 4 },
+  { label: 'What actions should we take?', sceneIndex: 3 },
 ] as const;
 
-export const SCENE_COUNT = 5;
+export const SCENE_COUNT = 4;
 
 export const SCENE_META = [
   { id: 'cover', trackerIndex: -1, accent: 'neutral' as const },
   { id: 'where', trackerIndex: 0, accent: 'cool' as const },
   { id: 'doing', trackerIndex: 1, accent: 'warm' as const },
-  { id: 'roles', trackerIndex: 2, accent: 'amber' as const },
-  { id: 'plan', trackerIndex: 3, accent: 'success' as const },
+  { id: 'plan', trackerIndex: 2, accent: 'success' as const },
 ];
 
 export const SCENE1_INSIGHTS: InsightCard[] = [
@@ -251,7 +249,7 @@ export const ACTION_CARDS: ActionCard[] = [
     timing: 'Do now',
     impact: 'High',
     effort: 'Med',
-    provenance: 'from §3',
+    provenance: 'from workforce mix',
   },
   {
     id: 'a4',

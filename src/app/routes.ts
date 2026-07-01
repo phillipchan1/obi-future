@@ -6,6 +6,7 @@ import { MinimalPage } from "./components/MinimalPage";
 import { Dashboard } from "./components/Dashboard";
 import { IntelligencePage } from "./components/IntelligencePage";
 import { ReadinessWrappedPage } from "./components/ReadinessWrappedPage";
+import { ReadinessVerticalPage } from "./components/ReadinessVerticalPage";
 
 export const router = createBrowserRouter(
   [
@@ -42,6 +43,10 @@ export const router = createBrowserRouter(
         {
           path: "/readiness-wrapped",
           Component: ReadinessWrappedPage,
+        },
+        {
+          path: "/readiness-vertical",
+          Component: ReadinessVerticalPage,
         },
       ],
     },

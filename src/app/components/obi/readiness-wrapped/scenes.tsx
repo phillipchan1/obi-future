@@ -7,7 +7,6 @@ import {
   SCENE3_INSIGHTS,
   ACTION_CARDS,
   COPILOT_USAGE_MODEL,
-  buildActionCopilotPrompt,
   coveragePct,
   aiMaximizationPct,
   estimatedMonthlyAgentHoursSaved,
@@ -488,19 +487,11 @@ type ScenePlanProps = Readonly<{
 
 export function ScenePlan({ active, onAskAction }: ScenePlanProps) {
   const accent = SCENE_ACCENT_STYLES.success;
-  const [promptPreview, setPromptPreview] = useState<PromptPreview | null>(null);
 
   return (
     <div className="space-y-6">
-      <CopilotPromptModal
-        open={promptPreview !== null}
-        title={promptPreview?.title ?? ''}
-        subtitle={promptPreview?.subtitle ?? ''}
-        prompt={promptPreview?.prompt ?? ''}
-        onClose={() => setPromptPreview(null)}
-      />
       <header style={{ animation: active ? 'rw-rise 0.5s ease both' : undefined }}>
-        <SectionEyebrow accentColor={accent.text}>04 · Your 2026 game plan</SectionEyebrow>
+        <SectionEyebrow accentColor={accent.text}>03 · Recommended actions</SectionEyebrow>
         <h2 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: RW.text }}>
           Six moves — each one earned by the story you just walked through.
         </h2>
@@ -514,13 +505,6 @@ export function ScenePlan({ active, onAskAction }: ScenePlanProps) {
             animateIn={active}
             staggerDelay={80 + i * 60}
             onAsk={() => onAskAction(card)}
-            onCopilotPrompt={() =>
-              setPromptPreview({
-                title: `Brainstorm: ${card.title}`,
-                subtitle: 'A recommendation prompt seeded with the evidence behind this action.',
-                prompt: buildActionCopilotPrompt(card),
-              })
-            }
           />
         ))}
       </div>

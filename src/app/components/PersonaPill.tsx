@@ -1,10 +1,11 @@
 import { useLocation, useNavigate } from 'react-router';
 
-export type PersonaView = 'gameplan' | 'companyIntel' | 'readinessWrapped' | 'employee';
+export type PersonaView = 'gameplan' | 'companyIntel' | 'readinessWrapped' | 'readinessVertical' | 'employee';
 
 export function getActivePersonaView(pathname: string, search: string): PersonaView {
   if (pathname === '/full' || pathname === '/') return 'gameplan';
   if (pathname === '/readiness-wrapped') return 'readinessWrapped';
+  if (pathname === '/readiness-vertical') return 'readinessVertical';
   if (pathname === '/intelligence') return 'companyIntel';
   if (pathname === '/dashboard') {
     const params = new URLSearchParams(search);
@@ -17,6 +18,7 @@ const PILLS: { id: PersonaView; label: string }[] = [
   { id: 'gameplan', label: 'Game Plan' },
   { id: 'companyIntel', label: 'Super Leader' },
   { id: 'readinessWrapped', label: 'AI Readiness' },
+  { id: 'readinessVertical', label: 'AI Readiness - Vertical' },
   { id: 'employee', label: 'My View' },
 ];
 
@@ -30,6 +32,7 @@ export function PersonaPill() {
     if (view === 'gameplan') navigate('/full');
     else if (view === 'employee') navigate('/dashboard?view=employee');
     else if (view === 'readinessWrapped') navigate('/readiness-wrapped');
+    else if (view === 'readinessVertical') navigate('/readiness-vertical');
     else navigate('/intelligence');
   };
 

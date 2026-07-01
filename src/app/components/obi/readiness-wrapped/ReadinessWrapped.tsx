@@ -11,7 +11,6 @@ import {
   SceneCover,
   SceneDoing,
   ScenePlan,
-  SceneRoles,
   SceneWhere,
 } from './scenes';
 import { RW, SCENE_ACCENT_STYLES } from './theme';
@@ -170,10 +169,7 @@ export function ReadinessWrapped() {
               <SceneDoing active={current === 2} onAskInsight={askObi.openFromInsight} />
             )}
             {current === 3 && (
-              <SceneRoles active={current === 3} onAskInsight={askObi.openFromInsight} />
-            )}
-            {current === 4 && (
-              <ScenePlan active={current === 4} onAskAction={askObi.openFromAction} />
+              <ScenePlan active={current === 3} onAskAction={askObi.openFromAction} />
             )}
           </div>
         </main>

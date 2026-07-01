@@ -138,7 +138,6 @@ type ActionCardProps = Readonly<{
   effort: string;
   provenance: string;
   onAsk: () => void;
-  onCopilotPrompt: () => void;
   staggerDelay?: number;
   animateIn?: boolean;
 }>;
@@ -153,28 +152,17 @@ export function ActionCardUI({
   effort,
   provenance,
   onAsk,
-  onCopilotPrompt,
   staggerDelay = 0,
   animateIn = true,
 }: ActionCardProps) {
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      e.stopPropagation();
-      onAsk();
-    }
-  };
-
   return (
-    <div
-      role="button"
-      tabIndex={0}
+    <button
+      type="button"
       onClick={e => {
         e.stopPropagation();
         onAsk();
       }}
-      onKeyDown={handleKeyDown}
-      className="group relative w-full text-left rounded-xl border p-5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 cursor-pointer"
+      className="group relative w-full text-left rounded-xl border p-5 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
       style={{
         backgroundColor: RW.card,
         borderColor: RW.border,
@@ -219,18 +207,7 @@ export function ActionCardUI({
         {effort !== '—' && <MetaPill label={effort} accent="neutral" />}
         <MetaPill label={provenance} accent="muted" />
       </div>
-      <button
-        type="button"
-        onClick={e => {
-          e.stopPropagation();
-          onCopilotPrompt();
-        }}
-        className="mt-4 inline-flex items-center gap-1 px-3 py-2 rounded-lg border text-xs font-semibold transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
-        style={{ color: RW.purpleText, borderColor: RW.purpleBorder, backgroundColor: RW.purpleBg }}
-      >
-        Brainstorm in Copilot →
-      </button>
-    </div>
+    </button>
   );
 }
 
