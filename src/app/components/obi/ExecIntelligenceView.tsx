@@ -166,12 +166,8 @@ function InsightCard({
 function WireframeLevelPill({ level }: { level: ReadinessLevel }) {
   return (
     <span
-      className="inline-block px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wide"
-      style={{
-        borderColor: WF.border,
-        background: WF_LEVEL[level],
-        color: level === 'Skilled' ? WF.textOnActive : WF.text,
-      }}
+      className="inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white"
+      style={{ background: WF_LEVEL[level] }}
     >
       {level}
     </span>

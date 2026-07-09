@@ -5,6 +5,7 @@ import {
   computeOrgGraphLayout,
   getSelectionState,
   graphEdgePath,
+  GRAPH_NODE_HEIGHT,
   GRAPH_PADDING,
   type GraphLayoutBox,
   type OrgNode,
@@ -13,6 +14,28 @@ import {
 } from '../../../data/org-tree';
 import { WF, WF_LEVEL } from './wireframe-theme';
 import type { ReadinessLevel } from '../../../data/dashboard';
+
+export type OrgGraphDisplayOptions = {
+  showScore: boolean;
+  showHeadcount: boolean;
+  showLevelMix: boolean;
+  showDimensions: boolean;
+};
+
+export const DEFAULT_ORG_GRAPH_DISPLAY: OrgGraphDisplayOptions = {
+  showScore: true,
+  showHeadcount: true,
+  showLevelMix: true,
+  showDimensions: false,
+};
+
+export function getOrgGraphNodeHeight(options: OrgGraphDisplayOptions): number {
+  let height = 56;
+  if (options.showScore || options.showHeadcount) height += 22;
+  if (options.showLevelMix) height += 14;
+  if (options.showDimensions) height += 78;
+  return Math.max(GRAPH_NODE_HEIGHT, height);
+}
 
 function LevelMiniBar({ metrics }: { metrics: OrgNodeMetrics }) {
   const total = metrics.assessedCount;
@@ -29,7 +52,7 @@ function LevelMiniBar({ metrics }: { metrics: OrgNodeMetrics }) {
     .filter(s => s.count > 0);
 
   return (
-    <div className="flex h-1.5 w-full overflow-hidden mt-1.5" style={{ border: `1px solid ${WF.border}` }}>
+    <div className="mt-1.5 flex h-1.5 w-full overflow-hidden rounded-full" style={{ background: WF.fill }}>
       {segments.map(s => (
         <div
           key={s.level}
@@ -41,13 +64,56 @@ function LevelMiniBar({ metrics }: { metrics: OrgNodeMetrics }) {
   );
 }
 
+function DimensionTextList({ metrics }: { metrics: OrgNodeMetrics }) {
+  if (metrics.dimensions.length === 0) {
+    return (
+      <p className="mt-1.5 text-[8px] italic" style={{ color: WF.muted }}>
+        No dimensions
+      </p>
+    );
+  }
+
+  return (
+    <ul className="mt-1.5 space-y-0.5">
+      {metrics.dimensions.map(d => {
+        const short =
+          d.label === 'Mindset & Comfort'
+            ? 'Mindset'
+            : d.label === 'Usage Frequency'
+              ? 'Usage'
+              : d.label === 'Prompting Skill'
+                ? 'Prompting'
+                : d.label === 'Workflow Impact'
+                  ? 'Workflow'
+                  : d.label === 'Scaling & Enablement'
+                    ? 'Scaling'
+                    : d.label;
+        const isWeak = metrics.lowest?.key === d.key;
+        return (
+          <li key={d.key} className="flex items-center justify-between gap-1 text-[8px] leading-tight">
+            <span className="truncate" style={{ color: isWeak ? WF.red : WF.textSecondary }}>
+              {short}
+            </span>
+            <span
+              className="font-bold tabular-nums"
+              style={{ color: isWeak ? WF.red : WF.text }}
+            >
+              {d.score100}
+            </span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
 function NodeCheckbox({ state }: { state: SelectionState }) {
   return (
     <span
       className="absolute top-1.5 right-1.5 w-3.5 h-3.5 flex items-center justify-center rounded-sm"
       style={{
-        border: `1px solid ${WF.borderStrong}`,
-        background: state === 'all' ? WF.fillActive : state === 'partial' ? WF.accentSoft : WF.surface,
+        border: `1px solid ${state === 'all' ? WF.accent : WF.borderStrong}`,
+        background: state === 'all' ? WF.accent : state === 'partial' ? WF.accentSoft : WF.surface,
         color: state === 'all' ? WF.textOnActive : WF.textSecondary,
       }}
     >
@@ -61,10 +127,12 @@ function GraphNodeCard({
   box,
   selectedIds,
   onToggleSelect,
+  display,
 }: {
   box: GraphLayoutBox;
   selectedIds: Set<string>;
   onToggleSelect: (node: OrgNode) => void;
+  display: OrgGraphDisplayOptions;
 }) {
   const { orgNode } = box;
   const metrics = computeMetricsForNode(orgNode);
@@ -75,47 +143,72 @@ function GraphNodeCard({
   const typeLabel =
     orgNode.type === 'company' ? 'Enterprise' : orgNode.type === 'division' ? 'Division' : 'Dept';
 
+  const showMetricsBlock =
+    display.showScore ||
+    display.showHeadcount ||
+    display.showLevelMix ||
+    display.showDimensions;
+
   return (
     <button
       type="button"
       onClick={() => onToggleSelect(orgNode)}
-      className="absolute text-left cursor-pointer transition-shadow"
+      className="absolute text-left cursor-pointer transition-shadow rounded-xl"
       style={{
         left: box.x + GRAPH_PADDING,
         top: box.y + GRAPH_PADDING,
         width: box.width,
         height: box.height,
-        background: isSelected ? WF.fillActive : isPartial ? WF.surface : WF.surface,
-        color: isSelected ? WF.textOnActive : WF.text,
-        border: `1px solid ${isSelected ? WF.fillActive : WF.border}`,
-        boxShadow: isSelected ? WF.shadowMd : isPartial ? WF.shadowSm : undefined,
+        background: isSelected ? WF.accentSoft : WF.surface,
+        color: WF.text,
+        border: `1px solid ${isSelected ? WF.accent : isPartial ? WF.purpleBorder : WF.border}`,
+        boxShadow: isSelected || isPartial ? WF.shadowMd : WF.shadowSm,
       }}
     >
       <NodeCheckbox state={selection} />
 
-      <div className="px-2.5 py-2 h-full flex flex-col justify-between pointer-events-none">
+      <div className="px-2.5 py-2 h-full flex flex-col justify-between pointer-events-none overflow-hidden">
         <div>
-          <p className="text-[9px] uppercase tracking-wider font-semibold opacity-70">{typeLabel}</p>
+          <p className="text-[9px] uppercase tracking-wider font-semibold" style={{ color: WF.muted }}>
+            {typeLabel}
+          </p>
           <p className="text-[11px] font-bold leading-tight mt-0.5 line-clamp-2">{orgNode.name}</p>
         </div>
 
-        <div>
-          <div className="flex items-baseline justify-between gap-1">
-            <span className="text-[8px] uppercase tracking-wider opacity-70">Avg</span>
-            <span className="text-sm font-bold tabular-nums leading-none">
-              {metrics.avgScore ?? '—'}
-            </span>
+        {showMetricsBlock && (
+          <div>
+            {(display.showScore || display.showHeadcount) && (
+              <div className="flex items-baseline justify-between gap-1">
+                {display.showScore ? (
+                  <>
+                    <span className="text-[8px] uppercase tracking-wider" style={{ color: WF.muted }}>Avg</span>
+                    <span className="text-sm font-bold tabular-nums leading-none">
+                      {metrics.avgScore ?? '—'}
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-[8px] uppercase tracking-wider" style={{ color: WF.muted }}>
+                    Assessed
+                  </span>
+                )}
+              </div>
+            )}
+            {display.showHeadcount && (
+              <div className="flex items-center justify-between mt-0.5">
+                <span className="text-[8px] tabular-nums" style={{ color: WF.muted }}>
+                  {metrics.assessedCount}/{metrics.totalCount}
+                </span>
+                {!display.showScore && (
+                  <span className="text-[8px] font-semibold tabular-nums" style={{ color: WF.orange }}>
+                    {metrics.participationPct}%
+                  </span>
+                )}
+              </div>
+            )}
+            {display.showLevelMix && <LevelMiniBar metrics={metrics} />}
+            {display.showDimensions && <DimensionTextList metrics={metrics} />}
           </div>
-          <div className="flex items-center justify-between mt-0.5">
-            <span className="text-[8px] tabular-nums opacity-70">
-              {metrics.assessedCount}/{metrics.totalCount}
-            </span>
-          </div>
-          {!isSelected && <LevelMiniBar metrics={metrics} />}
-          {isSelected && (
-            <div className="h-1.5 mt-1.5 border border-current opacity-40" style={{ background: 'rgba(255,255,255,0.2)' }} />
-          )}
-        </div>
+        )}
       </div>
     </button>
   );
@@ -124,11 +217,14 @@ function GraphNodeCard({
 export function OrgGraphCanvas({
   selectedIds,
   onToggleSelect,
+  display = DEFAULT_ORG_GRAPH_DISPLAY,
 }: {
   selectedIds: Set<string>;
   onToggleSelect: (node: OrgNode) => void;
+  display?: OrgGraphDisplayOptions;
 }) {
-  const layout = useMemo(() => computeOrgGraphLayout(), []);
+  const nodeHeight = getOrgGraphNodeHeight(display);
+  const layout = useMemo(() => computeOrgGraphLayout(undefined, nodeHeight), [nodeHeight]);
 
   const boxById = useMemo(() => {
     const map = new Map<string, GraphLayoutBox>();
@@ -138,13 +234,13 @@ export function OrgGraphCanvas({
 
   return (
     <div
-      className="relative overflow-auto min-h-[280px] sm:min-h-[340px] max-h-[48vh] overscroll-contain touch-pan-x touch-pan-y"
+      className="relative overflow-auto min-h-[360px] sm:min-h-[440px] max-h-[62vh] overscroll-contain touch-pan-x touch-pan-y"
       style={{
         WebkitOverflowScrolling: 'touch',
         background: WF.bg,
         backgroundImage: `
-          linear-gradient(to right, rgba(0,0,0,0.03) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(0,0,0,0.03) 1px, transparent 1px)
+          linear-gradient(to right, rgba(79,70,229,0.04) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(79,70,229,0.04) 1px, transparent 1px)
         `,
         backgroundSize: '24px 24px',
       }}
@@ -201,6 +297,7 @@ export function OrgGraphCanvas({
             box={box}
             selectedIds={selectedIds}
             onToggleSelect={onToggleSelect}
+            display={display}
           />
         ))}
       </div>

@@ -20,7 +20,7 @@ export default defineConfig({
   // Relative paths work for both *.pages.github.io (root) and org.github.io/repo/
   base: './',
   server: {
-    port: 3000,
+    port: 4173,
     strictPort: true,
   },
   plugins: [

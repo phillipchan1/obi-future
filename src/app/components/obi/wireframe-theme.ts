@@ -1,44 +1,56 @@
 import type { ReadinessLevel } from '../../../data/dashboard';
 import type { CSSProperties } from 'react';
 
-/** Paper-prototype palette — low-fidelity but readable contrast hierarchy */
+/** Light executive dashboard palette — colored, presentation-ready */
 export const WF = {
-  bg: '#F7F8FA',
+  bg: '#F4F5F7',
   surface: '#FFFFFF',
-  surfaceMuted: '#EEF0F3',
-  border: '#DDE1E6',
-  borderStrong: '#C4C9D0',
-  borderLight: '#EEF0F2',
-  text: '#1D1D1F',
-  textSecondary: '#48484A',
-  muted: '#86868B',
-  fill: '#F1F3F5',
-  fillHover: '#E8EBEF',
-  fillActive: '#2C2C2E',
+  surfaceMuted: '#EEF0F4',
+  border: '#E5E7EB',
+  borderStrong: '#D1D5DB',
+  borderLight: '#F3F4F6',
+  text: '#111827',
+  textSecondary: '#4B5563',
+  muted: '#9CA3AF',
+  fill: '#F3F4F6',
+  fillHover: '#E5E7EB',
+  fillActive: '#4F46E5',
   textOnActive: '#FFFFFF',
-  accent: '#3A3A3C',
-  accentSoft: '#E3E6EA',
-  hatch: '#F5F6F8',
+  accent: '#4F46E5',
+  accentSoft: '#EEF2FF',
+  purple: '#7C5CFC',
+  purpleSoft: '#F3F0FF',
+  purpleBorder: '#DDD6FE',
+  green: '#16A34A',
+  greenSoft: '#F0FDF4',
+  red: '#E11D48',
+  redSoft: '#FFF1F2',
+  amber: '#D97706',
+  amberSoft: '#FFFBEB',
+  blue: '#2563EB',
+  orange: '#EA580C',
+  hatch: '#F9FAFB',
   font: 'ui-sans-serif, system-ui, -apple-system, sans-serif',
-  shadowSm: '0 1px 2px rgba(0, 0, 0, 0.04)',
-  shadowMd: '0 2px 8px rgba(0, 0, 0, 0.06)',
+  shadowSm: '0 1px 2px rgba(15, 23, 42, 0.04)',
+  shadowMd: '0 4px 16px rgba(15, 23, 42, 0.06)',
+  shadowCard: '0 1px 3px rgba(15, 23, 42, 0.05), 0 8px 24px rgba(15, 23, 42, 0.04)',
 } as const;
 
 export const WF_LEVEL: Record<ReadinessLevel, string> = {
-  Beginner: '#FFFFFF',
-  Learner: '#E5E5EA',
-  Familiar: '#AEAEB2',
-  Skilled: '#3A3A3C',
+  Beginner: '#F43F5E',
+  Learner: '#F59E0B',
+  Familiar: '#3B82F6',
+  Skilled: '#22C55E',
 };
 
 export const WF_LEVEL_STROKE: Record<ReadinessLevel, string> = {
-  Beginner: WF.borderStrong,
-  Learner: WF.borderStrong,
-  Familiar: WF.borderStrong,
-  Skilled: WF.borderStrong,
+  Beginner: '#E11D48',
+  Learner: '#D97706',
+  Familiar: '#2563EB',
+  Skilled: '#16A34A',
 };
 
-/** CSS variables for scoped wireframe shell overrides */
+/** CSS variables for scoped shell overrides */
 export const WF_CSS_VARS: CSSProperties = {
   ['--wf-border' as string]: WF.border,
   ['--wf-border-strong' as string]: WF.borderStrong,
@@ -51,7 +63,8 @@ export const WF_CSS_VARS: CSSProperties = {
 export const wfCardStyle: CSSProperties = {
   background: WF.surface,
   border: `1px solid ${WF.border}`,
-  boxShadow: WF.shadowSm,
+  borderRadius: 16,
+  boxShadow: WF.shadowCard,
 };
 
 export const wfSectionStyle: CSSProperties = {
@@ -62,8 +75,8 @@ export const wfSectionStyle: CSSProperties = {
 export const wfTabActiveStyle: CSSProperties = {
   background: WF.surface,
   color: WF.text,
-  borderColor: WF.borderStrong,
-  borderBottomColor: WF.fillActive,
+  borderColor: WF.border,
+  borderBottomColor: WF.accent,
   boxShadow: WF.shadowSm,
 };
 

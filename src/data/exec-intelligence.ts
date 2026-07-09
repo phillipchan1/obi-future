@@ -13,8 +13,25 @@ export type CannedViewId = 'my-org' | 'it-levels' | 'safety-ou';
 
 export const CANNED_VIEWS: { id: CannedViewId; label: string; departments: string[] | null }[] = [
   { id: 'my-org', label: 'My org', departments: null },
-  { id: 'it-levels', label: 'IT levels', departments: ['IT'] },
-  { id: 'safety-ou', label: 'Safety OU', departments: ['Operations', 'Customer Success', 'HR'] },
+  {
+    id: 'it-levels',
+    label: 'ETS',
+    departments: ['Infrastructure & Cloud', 'Application Services', 'Network & Security', 'Service Desk'],
+  },
+  {
+    id: 'safety-ou',
+    label: 'DPT + DGS',
+    departments: [
+      'Process Excellence',
+      'Automation & AI',
+      'Change Enablement',
+      'Portfolio Ops',
+      'Data Platforms',
+      'Analytics & Insights',
+      'Governance & Quality',
+      'Integration Services',
+    ],
+  },
 ];
 
 export const ALL_DEPARTMENTS = [...new Set(EMPLOYEES.map(e => e.department))].sort();

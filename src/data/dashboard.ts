@@ -100,9 +100,9 @@ export const INTELLIGENCE = {
     { title: 'Business Analyst', disruptionScore: 7.2, avgReadiness: 61 },
   ],
   flagged: [
-    { employeeId: 3, title: 'Product Manager II', department: 'Product & Design', disruptionScore: 81, finalScore: 54, level: 'Learner' as const },
-    { employeeId: 5, title: 'Senior Business Analyst', department: 'Operations', disruptionScore: 78, finalScore: 48, level: 'Beginner' as const },
-    { employeeId: 4, title: 'Associate PM', department: 'Product & Design', disruptionScore: 75, finalScore: 59, level: 'Learner' as const },
+    { employeeId: 3, title: 'Product Manager II', department: 'Process Excellence', disruptionScore: 81, finalScore: 54, level: 'Learner' as const },
+    { employeeId: 5, title: 'Senior Business Analyst', department: 'Service Desk', disruptionScore: 78, finalScore: 48, level: 'Beginner' as const },
+    { employeeId: 4, title: 'Associate PM', department: 'Analytics & Insights', disruptionScore: 75, finalScore: 59, level: 'Learner' as const },
   ],
   courseCompletionByTier: { doNow: 34, doLater: 12, skip: 4 },
   copilotPercentiles: [
@@ -154,7 +154,20 @@ const INVITED_NAMES = [
   'Vera Lang', 'Weston Moss', 'Xena North',
 ];
 
-const DEPTS = ['Product & Design', 'Engineering', 'Operations', 'Customer Success', 'Marketing', 'IT', 'Finance', 'HR'];
+const DEPTS = [
+  'Infrastructure & Cloud',
+  'Application Services',
+  'Network & Security',
+  'Service Desk',
+  'Process Excellence',
+  'Automation & AI',
+  'Change Enablement',
+  'Portfolio Ops',
+  'Data Platforms',
+  'Analytics & Insights',
+  'Governance & Quality',
+  'Integration Services',
+];
 const TITLES = [
   'Senior Product Manager', 'Product Manager II', 'Associate PM', 'Principal PM',
   'Business Analyst', 'Senior Business Analyst', 'Data Analyst',

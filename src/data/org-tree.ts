@@ -1,6 +1,10 @@
 import {
+  DIMENSION_META,
   EMPLOYEES,
   hasCompletedAssessment,
+  LEADER_STATS,
+  type DimensionName,
+  type DimensionScores,
   type ReadinessLevel,
 } from './dashboard';
 
@@ -15,45 +19,66 @@ export type OrgNode = {
   department?: string;
 };
 
+export type DimensionMetric = {
+  key: keyof DimensionScores;
+  label: DimensionName;
+  /** 0–100 scale for executive display */
+  score100: number;
+  /** Raw 1–5 average */
+  score5: number;
+  /** Max − min across assessed people (0–100) */
+  spread100: number;
+};
+
 export type OrgNodeMetrics = {
   totalCount: number;
   assessedCount: number;
   avgScore: number | null;
+  participationPct: number;
+  trendDelta: number;
   levelDistribution: Record<ReadinessLevel, number>;
+  dimensions: DimensionMetric[];
+  strongest: DimensionMetric | null;
+  lowest: DimensionMetric | null;
+  largestSpread: DimensionMetric | null;
 };
 
 export const ORG_ROOT: OrgNode = {
   id: 'company',
-  name: 'GridTech Utilities',
+  name: 'SoCal Edison IT',
   type: 'company',
   children: [
     {
-      id: 'tech',
-      name: 'Technology',
+      id: 'div-ets',
+      name: 'ETS',
       type: 'division',
       children: [
-        { id: 'dept-product', name: 'Product & Design', type: 'department', department: 'Product & Design' },
-        { id: 'dept-engineering', name: 'Engineering', type: 'department', department: 'Engineering' },
-        { id: 'dept-it', name: 'IT', type: 'department', department: 'IT' },
+        { id: 'ets-cloud', name: 'Infrastructure & Cloud', type: 'department', department: 'Infrastructure & Cloud' },
+        { id: 'ets-apps', name: 'Application Services', type: 'department', department: 'Application Services' },
+        { id: 'ets-network', name: 'Network & Security', type: 'department', department: 'Network & Security' },
+        { id: 'ets-service', name: 'Service Desk', type: 'department', department: 'Service Desk' },
       ],
     },
     {
-      id: 'ops-customer',
-      name: 'Operations & Customer',
+      id: 'div-dpt',
+      name: 'DPT',
       type: 'division',
       children: [
-        { id: 'dept-operations', name: 'Operations', type: 'department', department: 'Operations' },
-        { id: 'dept-cs', name: 'Customer Success', type: 'department', department: 'Customer Success' },
+        { id: 'dpt-process', name: 'Process Excellence', type: 'department', department: 'Process Excellence' },
+        { id: 'dpt-automation', name: 'Automation & AI', type: 'department', department: 'Automation & AI' },
+        { id: 'dpt-change', name: 'Change Enablement', type: 'department', department: 'Change Enablement' },
+        { id: 'dpt-portfolio', name: 'Portfolio Ops', type: 'department', department: 'Portfolio Ops' },
       ],
     },
     {
-      id: 'corporate',
-      name: 'Corporate',
+      id: 'div-dgs',
+      name: 'DGS',
       type: 'division',
       children: [
-        { id: 'dept-marketing', name: 'Marketing', type: 'department', department: 'Marketing' },
-        { id: 'dept-finance', name: 'Finance', type: 'department', department: 'Finance' },
-        { id: 'dept-hr', name: 'HR', type: 'department', department: 'HR' },
+        { id: 'dgs-platforms', name: 'Data Platforms', type: 'department', department: 'Data Platforms' },
+        { id: 'dgs-analytics', name: 'Analytics & Insights', type: 'department', department: 'Analytics & Insights' },
+        { id: 'dgs-governance', name: 'Governance & Quality', type: 'department', department: 'Governance & Quality' },
+        { id: 'dgs-integration', name: 'Integration Services', type: 'department', department: 'Integration Services' },
       ],
     },
   ],
@@ -97,6 +122,47 @@ export function getDepartmentsForSelection(selectedIds: Iterable<string>): strin
   return [...depts];
 }
 
+function toScore100(score5: number): number {
+  return Math.round((score5 / 5) * 100);
+}
+
+function computeDimensionMetrics(
+  assessed: ReturnType<typeof EMPLOYEES.filter>,
+): {
+  dimensions: DimensionMetric[];
+  strongest: DimensionMetric | null;
+  lowest: DimensionMetric | null;
+  largestSpread: DimensionMetric | null;
+} {
+  if (assessed.length === 0) {
+    return { dimensions: [], strongest: null, lowest: null, largestSpread: null };
+  }
+
+  const dimensions: DimensionMetric[] = DIMENSION_META.map(({ key, label }) => {
+    const vals = assessed.map(e => e.dimensions[key]);
+    const avg5 = vals.reduce((s, v) => s + v, 0) / vals.length;
+    const min5 = Math.min(...vals);
+    const max5 = Math.max(...vals);
+    return {
+      key,
+      label,
+      score5: Math.round(avg5 * 10) / 10,
+      score100: toScore100(avg5),
+      spread100: toScore100(max5) - toScore100(min5),
+    };
+  });
+
+  const byScore = [...dimensions].sort((a, b) => b.score100 - a.score100);
+  const bySpread = [...dimensions].sort((a, b) => b.spread100 - a.spread100);
+
+  return {
+    dimensions,
+    strongest: byScore[0] ?? null,
+    lowest: byScore[byScore.length - 1] ?? null,
+    largestSpread: bySpread[0] ?? null,
+  };
+}
+
 export function computeMetricsForDepartments(departments: string[] | null): OrgNodeMetrics {
   const pool = departments?.length
     ? EMPLOYEES.filter(e => departments.includes(e.department))
@@ -112,11 +178,20 @@ export function computeMetricsForDepartments(departments: string[] | null): OrgN
     ? Math.round((assessed.reduce((s, e) => s + (e.finalScore ?? 0), 0) / assessed.length) * 10) / 10
     : null;
 
+  const participationPct = pool.length
+    ? Math.round((assessed.length / pool.length) * 100)
+    : 0;
+
+  const dim = computeDimensionMetrics(assessed);
+
   return {
     totalCount: pool.length,
     assessedCount: assessed.length,
     avgScore,
+    participationPct,
+    trendDelta: LEADER_STATS.scoreGainInRollout,
     levelDistribution,
+    ...dim,
   };
 }
 
@@ -146,15 +221,15 @@ export function getSelectionState(node: OrgNode, selectedIds: Set<string>): Sele
 // ─── Graph layout (top-down tree) ─────────────────────────────────────────────
 
 export const GRAPH_NODE_WIDTH: Record<OrgNodeType, number> = {
-  company: 196,
-  division: 156,
-  department: 132,
+  company: 220,
+  division: 168,
+  department: 152,
 };
 
-export const GRAPH_NODE_HEIGHT = 80;
-export const GRAPH_H_SPACING = 24;
-export const GRAPH_V_SPACING = 72;
-export const GRAPH_PADDING = 32;
+export const GRAPH_NODE_HEIGHT = 96;
+export const GRAPH_H_SPACING = 28;
+export const GRAPH_V_SPACING = 88;
+export const GRAPH_PADDING = 40;
 
 export type GraphLayoutBox = {
   id: string;
@@ -226,12 +301,12 @@ function assignLayoutX(tree: LayoutTreeNode, left: number): number {
   return left + tree.subtreeWidth;
 }
 
-function assignLayoutY(tree: LayoutTreeNode, depth: number): void {
-  tree.y = depth * (GRAPH_NODE_HEIGHT + GRAPH_V_SPACING);
-  for (const child of tree.children) assignLayoutY(child, depth + 1);
+function assignLayoutY(tree: LayoutTreeNode, depth: number, nodeHeight: number): void {
+  tree.y = depth * (nodeHeight + GRAPH_V_SPACING);
+  for (const child of tree.children) assignLayoutY(child, depth + 1, nodeHeight);
 }
 
-function flattenLayout(tree: LayoutTreeNode): GraphLayoutBox[] {
+function flattenLayout(tree: LayoutTreeNode, nodeHeight: number): GraphLayoutBox[] {
   const boxes: GraphLayoutBox[] = [
     {
       id: tree.orgNode.id,
@@ -239,10 +314,10 @@ function flattenLayout(tree: LayoutTreeNode): GraphLayoutBox[] {
       x: tree.x,
       y: tree.y,
       width: nodeWidth(tree.orgNode),
-      height: GRAPH_NODE_HEIGHT,
+      height: nodeHeight,
     },
   ];
-  for (const child of tree.children) boxes.push(...flattenLayout(child));
+  for (const child of tree.children) boxes.push(...flattenLayout(child, nodeHeight));
   return boxes;
 }
 
@@ -255,12 +330,15 @@ function collectLayoutEdges(tree: LayoutTreeNode): GraphLayoutEdge[] {
   return edges;
 }
 
-export function computeOrgGraphLayout(root: OrgNode = ORG_ROOT): OrgGraphLayout {
+export function computeOrgGraphLayout(
+  root: OrgNode = ORG_ROOT,
+  nodeHeight: number = GRAPH_NODE_HEIGHT,
+): OrgGraphLayout {
   const tree = buildLayoutTree(root);
   assignLayoutX(tree, 0);
-  assignLayoutY(tree, 0);
+  assignLayoutY(tree, 0, nodeHeight);
 
-  const boxes = flattenLayout(tree);
+  const boxes = flattenLayout(tree, nodeHeight);
   const edges = collectLayoutEdges(tree);
 
   const maxX = Math.max(...boxes.map(b => b.x + b.width));

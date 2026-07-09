@@ -102,12 +102,8 @@ function WireframeLevelPill({ level }: { level: ReadinessLevel }) {
   const fill = WF_LEVEL[level];
   return (
     <span
-      className="inline-block px-2 py-0.5 border text-[10px] font-bold uppercase tracking-wide"
-      style={{
-        borderColor: WF.border,
-        background: fill,
-        color: level === 'Skilled' ? WF.textOnActive : WF.text,
-      }}
+      className="inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white"
+      style={{ background: fill }}
     >
       {level}
     </span>
@@ -445,7 +441,7 @@ function ExpandedDetail({ e, colSpan }: { e: EmployeeRecord; colSpan: number }) 
 // ─── Main view ─────────────────────────────────────────────────────────────────
 
 export function IntelligenceView() {
-  const [viewMode, setViewMode] = useState<IntelligenceViewMode>('exec-brief');
+  const [viewMode, setViewMode] = useState<IntelligenceViewMode>('org-tree');
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('finalScore');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
@@ -648,12 +644,6 @@ export function IntelligenceView() {
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-lg font-semibold" style={{ color: WF.text }}>Super Leader Dashboard</h1>
-              <span
-                className="text-[9px] font-medium uppercase tracking-widest px-2 py-0.5"
-                style={{ background: WF.surfaceMuted, color: WF.muted, border: `1px solid ${WF.border}` }}
-              >
-                Paper prototype
-              </span>
             </div>
             <p className="text-xs mt-1" style={{ color: WF.muted }}>
               {LEADER_STATS.uniqueCompletions} assessed · {LEADER_STATS.jobTitleCount} roles
@@ -663,7 +653,7 @@ export function IntelligenceView() {
             <button
               type="button"
               onClick={exportCsv}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium"
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium"
               style={{ background: WF.surface, border: `1px solid ${WF.borderStrong}`, color: WF.textSecondary }}
             >
               <Download size={12} />
@@ -672,11 +662,11 @@ export function IntelligenceView() {
             <button
               type="button"
               onClick={() => setChatOpen(o => !o)}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold"
+              className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold"
               style={{
-                background: chatOpen ? WF.fillActive : WF.surface,
-                color: chatOpen ? WF.textOnActive : WF.textSecondary,
-                border: `1px solid ${chatOpen ? WF.fillActive : WF.borderStrong}`,
+                background: chatOpen ? WF.fillActive : WF.accent,
+                color: WF.textOnActive,
+                border: `1px solid ${chatOpen ? WF.fillActive : WF.accent}`,
               }}
             >
               <MessageSquare size={12} />
@@ -783,7 +773,7 @@ export function IntelligenceView() {
               <div className="flex-1 grid grid-cols-2 gap-x-3 gap-y-1 min-w-0">
                 {levelDistribution.map(({ level, count, color }) => (
                   <div key={level} className="flex items-center gap-1.5 min-w-0">
-                    <span className="w-2.5 h-2.5 flex-shrink-0 border border-black" style={{ backgroundColor: color }} />
+                    <span className="w-2.5 h-2.5 flex-shrink-0 rounded-full" style={{ backgroundColor: color }} />
                     <span className="text-[10px] truncate" style={{ color: WF.muted }}>{level}</span>
                     <span className="text-[10px] font-semibold ml-auto tabular-nums">{count}</span>
                   </div>
