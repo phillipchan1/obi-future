@@ -6,7 +6,7 @@ export function getActivePersonaView(pathname: string, search: string): PersonaV
   if (pathname === '/full' || pathname === '/') return 'gameplan';
   if (pathname === '/readiness-wrapped') return 'readinessWrapped';
   if (pathname === '/readiness-vertical') return 'readinessVertical';
-  if (pathname === '/intelligence') return 'companyIntel';
+  if (pathname === '/intelligence' || pathname.startsWith('/intelligence/')) return 'companyIntel';
   if (pathname === '/dashboard') {
     const params = new URLSearchParams(search);
     return params.get('view') === 'employee' ? 'employee' : 'companyIntel';
@@ -33,7 +33,7 @@ export function PersonaPill() {
     else if (view === 'employee') navigate('/dashboard?view=employee');
     else if (view === 'readinessWrapped') navigate('/readiness-wrapped');
     else if (view === 'readinessVertical') navigate('/readiness-vertical');
-    else navigate('/intelligence');
+    else navigate('/intelligence/org-tree');
   };
 
   return (

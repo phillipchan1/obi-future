@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect, type ReactNode } from 'react';
+import { useNavigate, useParams } from 'react-router';
 import {
   Search,
   Download,
@@ -29,6 +30,17 @@ import { getObiResponse } from '../../../data/obi-intelligence';
 import './wireframe.css';
 
 type IntelligenceViewMode = 'table' | 'org-tree' | 'exec-brief';
+
+const TAB_PATHS: Record<IntelligenceViewMode, string> = {
+  'org-tree': '/intelligence/org-tree',
+  'exec-brief': '/intelligence/exec-brief',
+  table: '/intelligence/table',
+};
+
+function tabFromParam(tab: string | undefined): IntelligenceViewMode {
+  if (tab === 'exec-brief' || tab === 'table' || tab === 'org-tree') return tab;
+  return 'org-tree';
+}
 
 // ─── Sorts & helpers ───────────────────────────────────────────────────────────
 
@@ -441,7 +453,23 @@ function ExpandedDetail({ e, colSpan }: { e: EmployeeRecord; colSpan: number }) 
 // ─── Main view ─────────────────────────────────────────────────────────────────
 
 export function IntelligenceView() {
-  const [viewMode, setViewMode] = useState<IntelligenceViewMode>('org-tree');
+  const navigate = useNavigate();
+  const { tab } = useParams<{ tab?: string }>();
+  const viewMode = tabFromParam(tab);
+
+  const setViewMode = useCallback(
+    (mode: IntelligenceViewMode) => {
+      navigate(TAB_PATHS[mode]);
+    },
+    [navigate],
+  );
+
+  useEffect(() => {
+    if (tab && tab !== viewMode) {
+      navigate(TAB_PATHS['org-tree'], { replace: true });
+    }
+  }, [tab, viewMode, navigate]);
+
   const [search, setSearch] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('finalScore');
   const [sortDir, setSortDir] = useState<SortDir>('desc');

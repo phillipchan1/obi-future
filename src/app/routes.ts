@@ -38,6 +38,10 @@ export const router = createBrowserRouter(
         },
         {
           path: "/intelligence",
+          loader: () => redirect("/intelligence/org-tree"),
+        },
+        {
+          path: "/intelligence/:tab",
           Component: IntelligencePage,
         },
         {
