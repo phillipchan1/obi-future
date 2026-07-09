@@ -738,7 +738,9 @@ export function IntelligenceView() {
         {viewMode === 'exec-brief' ? (
           <ExecIntelligenceView onAskObi={handleAskObi} />
         ) : viewMode === 'org-tree' ? (
-          <OrgTreeView />
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <OrgTreeView />
+          </div>
         ) : (
           <>
         <div className="flex-none px-5 py-3 flex flex-wrap items-center gap-2 border-b border-black">

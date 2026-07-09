@@ -808,6 +808,7 @@ export function OrgTreeView() {
   const [tableExpanded, setTableExpanded] = useState(false);
   const [copilotCard, setCopilotCard] = useState<ActionInsightCard | null>(null);
   const [display, setDisplay] = useState<OrgGraphDisplayOptions>(DEFAULT_ORG_GRAPH_DISPLAY);
+  const recordsRef = useRef<HTMLDivElement>(null);
 
   const toggleSelect = useCallback((node: OrgNode) => {
     setSelectedIds(prev => {
@@ -868,8 +869,21 @@ export function OrgTreeView() {
 
   const clearSelection = useCallback(() => setSelectedIds(new Set()), []);
 
+  const toggleRecords = useCallback(() => {
+    setTableExpanded(v => {
+      const next = !v;
+      if (next) {
+        // Wait a tick so the table mounts, then scroll it into view.
+        globalThis.window.setTimeout(() => {
+          recordsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+      return next;
+    });
+  }, []);
+
   return (
-    <div className="flex-1 flex flex-col min-h-0 overflow-auto">
+    <div className="h-full overflow-y-auto overscroll-contain">
       <CopilotPromptModal
         open={copilotCard !== null}
         title={copilotCard?.copilotTitle ?? ''}
@@ -879,7 +893,7 @@ export function OrgTreeView() {
       />
 
       <div
-        className="flex-none px-3 sm:px-5 py-3 border-b flex items-start sm:items-center justify-between gap-3"
+        className="px-3 sm:px-5 py-3 border-b flex items-start sm:items-center justify-between gap-3"
         style={{ borderColor: WF.border, background: WF.surface }}
       >
         <div className="min-w-0">
@@ -905,7 +919,7 @@ export function OrgTreeView() {
         </div>
       </div>
 
-      <div className="flex-none border-b" style={{ borderColor: WF.border }}>
+      <div className="border-b" style={{ borderColor: WF.border }}>
         {isMobile ? (
           <OrgTreeList selectedIds={selectedIds} display={display} onToggleSelect={toggleSelect} />
         ) : (
@@ -917,22 +931,26 @@ export function OrgTreeView() {
 
       <ActionInsightsSection cards={actionCards} onPlanInCopilot={setCopilotCard} />
 
-      <div className="flex-none border-y" style={{ borderColor: WF.border }}>
+      <div
+        ref={recordsRef}
+        className="border-y"
+        style={{ borderColor: WF.border, background: WF.surface }}
+      >
         <button
           type="button"
-          onClick={() => setTableExpanded(v => !v)}
+          onClick={toggleRecords}
           className="w-full flex items-center justify-between px-3 sm:px-5 py-3 text-left"
           style={{ background: WF.surface }}
+          aria-expanded={tableExpanded}
         >
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: WF.muted }}>
               Employee records
             </p>
-            {!tableExpanded && (
-              <p className="text-xs mt-0.5" style={{ color: WF.muted }}>
-                {filteredEmployees.length} records in current scope · click to expand
-              </p>
-            )}
+            <p className="text-xs mt-0.5" style={{ color: WF.muted }}>
+              {filteredEmployees.length} records in current scope
+              {tableExpanded ? ' · click to collapse' : ' · click to expand'}
+            </p>
           </div>
           {tableExpanded ? (
             <ChevronDown size={16} style={{ color: WF.muted }} />
@@ -940,13 +958,13 @@ export function OrgTreeView() {
             <ChevronRight size={16} style={{ color: WF.muted }} />
           )}
         </button>
-      </div>
 
-      {tableExpanded && (
-        <div className="flex-1 overflow-auto min-h-0">
-          <EmployeeTable rows={filteredEmployees} />
-        </div>
-      )}
+        {tableExpanded && (
+          <div className="border-t pb-8" style={{ borderColor: WF.border }}>
+            <EmployeeTable rows={filteredEmployees} />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

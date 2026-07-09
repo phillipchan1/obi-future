@@ -17,8 +17,9 @@ function figmaAssetResolver() {
 }
 
 export default defineConfig({
-  // Relative paths work for both *.pages.github.io (root) and org.github.io/repo/
-  base: './',
+  // Absolute base so nested routes (e.g. /intelligence/org-tree) don't resolve
+  // assets as ./assets under the wrong path. Override with BASE_PATH for GH Pages.
+  base: process.env.BASE_PATH || '/',
   server: {
     port: 4173,
     strictPort: true,
